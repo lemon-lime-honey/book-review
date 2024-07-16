@@ -16,7 +16,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24
 SECRET_KEY = os.environ.get("SECRET_KEY")
 ALGORITHM = os.environ.get("HASH_ALGORITHM")
 
-router = APIRouter(prefix="/account")
+router = APIRouter(prefix="/api/account")
 
 
 @router.post("/create", status_code=status.HTTP_204_NO_CONTENT)
