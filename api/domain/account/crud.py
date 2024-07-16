@@ -25,3 +25,7 @@ def check_account(db: so.Session, account_create: schemas.AccountCreate):
         )
         .first()
     )
+
+
+def find_account(db: so.Session, username: str):
+    return db.query(Account).filter(Account.username == username).first()
