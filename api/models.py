@@ -12,3 +12,19 @@ class Account(Base):
     )
     password: so.Mapped[str] = so.mapped_column(sa.String, nullable=False)
     email: so.Mapped[str] = so.mapped_column(sa.String, unique=True, nullable=False)
+
+    reviews: so.WriteOnlyMapped["Review"] = so.relationship(back_populates="author")
+
+
+class Review(Base):
+    __tablename__ = "review"
+
+    id: so.Mapped[int] = so.mapped_column(sa.Integer, primary_key=True)
+    book: so.Mapped[str] = so.mapped_column(sa.String, nullable=False)
+    subject: so.Mapped[str] = so.mapped_column(sa.String(30), nullable=False)
+    content: so.Mapped[str] = so.mapped_column(sa.Text, nullable=False)
+
+    author_id: so.Mapped[int] = so.mapped_column(
+        sa.ForeignKey("account.id"), nullable=False
+    )
+    author: so.Mapped["Account"] = so.relationship(back_populates="reviews")
