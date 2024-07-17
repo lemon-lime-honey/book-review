@@ -3,8 +3,8 @@ import sqlalchemy.orm as so
 from datetime import datetime, timedelta, UTC
 from dotenv import load_dotenv
 from fastapi import APIRouter, HTTPException, Depends
-from fastapi.security import OAuth2PasswordRequestForm
-from jose import jwt
+from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
+from jose import jwt, JWTError
 from starlette import status
 from domain.account import schemas, crud
 from database import get_db
@@ -15,6 +15,8 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24
 
 SECRET_KEY = os.environ.get("SECRET_KEY")
 ALGORITHM = os.environ.get("HASH_ALGORITHM")
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/account/login")
 
 router = APIRouter(prefix="/api/account")
 
@@ -52,3 +54,25 @@ def login(
         "token_type": "bearer",
         "username": account.username,
     }
+
+
+def load_current_account(
+    token: str = Depends(oauth2_scheme), db: so.Session = Depends(get_db)
+):
+    credential_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token, SECRET_KEY, ALGORITHM)
+        username: str = payload.get("sub")
+        if username is None:
+            raise credential_exception
+    except JWTError:
+        raise credential_exception
+    else:
+        account = crud.find_account(db, username)
+        if account is None:
+            raise credential_exception
+        return account
