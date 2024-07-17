@@ -1,4 +1,5 @@
 <script>
+  import Navigation from './components/Navigation.svelte';
   import Router from 'svelte-spa-router';
   import Index from './routes/Index.svelte';
   import AccountCreate from './routes/AccountCreate.svelte';
@@ -11,4 +12,5 @@
   };
 </script>
 
+<Navigation />
 <Router {routes} />
