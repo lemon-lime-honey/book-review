@@ -46,7 +46,7 @@ def review_update(
     crud.update_review(db, _review_update, review)
 
 
-@router.delete("/delete/{review_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/delete", status_code=status.HTTP_204_NO_CONTENT)
 def review_delete(
     _review_delete: schemas.ReviewDelete, db: so.Session = Depends(get_db)
 ):

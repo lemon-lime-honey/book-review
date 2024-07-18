@@ -15,8 +15,8 @@ class Account(Base):
     password: so.Mapped[str] = so.mapped_column(sa.String, nullable=False)
     email: so.Mapped[str] = so.mapped_column(sa.String, unique=True, nullable=False)
 
-    reviews: so.WriteOnlyMapped["Review"] = so.relationship(back_populates="author")
-    comments: so.WriteOnlyMapped["Comment"] = so.relationship(back_populates="author")
+    reviews: so.WriteOnlyMapped["Review"] = so.relationship(back_populates="author", passive_deletes=True)
+    comments: so.WriteOnlyMapped["Comment"] = so.relationship(back_populates="author", passive_deletes=True)
 
 
 class Review(Base):
@@ -33,7 +33,7 @@ class Review(Base):
         sa.ForeignKey("account.id"), nullable=False
     )
     author: so.Mapped["Account"] = so.relationship(back_populates="reviews")
-    comments: so.WriteOnlyMapped["Comment"] = so.relationship(back_populates="review")
+    comments: so.WriteOnlyMapped["Comment"] = so.relationship(back_populates="review", passive_deletes=True)
 
 
 class Comment(Base):
