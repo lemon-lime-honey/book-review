@@ -16,6 +16,7 @@ class Account(Base):
     email: so.Mapped[str] = so.mapped_column(sa.String, unique=True, nullable=False)
 
     reviews: so.WriteOnlyMapped["Review"] = so.relationship(back_populates="author")
+    comments: so.WriteOnlyMapped["Comment"] = so.relationship(back_populates="author")
 
 
 class Review(Base):
@@ -32,3 +33,22 @@ class Review(Base):
         sa.ForeignKey("account.id"), nullable=False
     )
     author: so.Mapped["Account"] = so.relationship(back_populates="reviews")
+    comments: so.WriteOnlyMapped["Comment"] = so.relationship(back_populates="review")
+
+
+class Comment(Base):
+    __tablename__ = "comment"
+    
+    id: so.Mapped[int] = so.mapped_column(sa.Integer, primary_key=True)
+    content: so.Mapped[str] = so.mapped_column(sa.String(300), nullable=False)
+    create_at: so.Mapped[datetime] = so.mapped_column(sa.DateTime, nullable=False)
+    updated_at: so.Mapped[datetime] = so.mapped_column(sa.DateTime, nullable=True)
+    
+    review_id: so.Mapped[int] = so.mapped_column(
+        sa.ForeignKey("review.id"), nullable=False
+    )
+    review: so.Mapped["Review"] = so.relationship(back_populates="comments")
+    author_id: so.Mapped[int] = so.mapped_column(
+        sa.ForeignKey("account.id"), nullable=False
+    )
+    author: so.Mapped["Account"] = so.relationship(back_populates="comments")
