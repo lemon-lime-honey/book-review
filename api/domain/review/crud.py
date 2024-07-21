@@ -20,7 +20,7 @@ def get_review_list(db: so.Session):
 
 
 def get_review(db: so.Session, review_id: int):
-    return db.query(Review).get(review_id)
+    return db.get(Review, review_id)
 
 
 def update_review(db: so.Session, review_update: schemas.ReviewUpdate, review: Review):

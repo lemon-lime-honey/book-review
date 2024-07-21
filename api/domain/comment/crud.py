@@ -30,7 +30,7 @@ def get_comment_list(db: so.Session, review: Review):
 
 
 def get_comment(db: so.Session, comment_id: int):
-    return db.query(Comment).get(comment_id)
+    return db.get(Comment, comment_id)
 
 
 def update_comment(
