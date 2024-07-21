@@ -1,7 +1,7 @@
 import sqlalchemy as sa
 import sqlalchemy.orm as so
 from datetime import datetime
-from typing import Optional
+from typing import List, Optional
 from database import Base
 
 
@@ -15,8 +15,8 @@ class Account(Base):
     password: so.Mapped[str] = so.mapped_column(sa.String, nullable=False)
     email: so.Mapped[str] = so.mapped_column(sa.String, unique=True, nullable=False)
 
-    reviews: so.WriteOnlyMapped["Review"] = so.relationship(back_populates="author", passive_deletes=True)
-    comments: so.WriteOnlyMapped["Comment"] = so.relationship(back_populates="author", passive_deletes=True)
+    reviews: so.Mapped[List["Review"]] = so.relationship(back_populates="author", passive_deletes=True)
+    comments: so.Mapped[List["Comment"]] = so.relationship(back_populates="author", passive_deletes=True)
 
 
 class Review(Base):
@@ -33,7 +33,7 @@ class Review(Base):
         sa.ForeignKey("account.id"), nullable=False
     )
     author: so.Mapped["Account"] = so.relationship(back_populates="reviews")
-    comments: so.WriteOnlyMapped["Comment"] = so.relationship(back_populates="review", passive_deletes=True)
+    comments: so.Mapped[List["Comment"]] = so.relationship(back_populates="review", passive_deletes=True)
 
 
 class Comment(Base):
@@ -41,7 +41,7 @@ class Comment(Base):
     
     id: so.Mapped[int] = so.mapped_column(sa.Integer, primary_key=True)
     content: so.Mapped[str] = so.mapped_column(sa.String(300), nullable=False)
-    create_at: so.Mapped[datetime] = so.mapped_column(sa.DateTime, nullable=False)
+    created_at: so.Mapped[datetime] = so.mapped_column(sa.DateTime, nullable=False)
     updated_at: so.Mapped[datetime] = so.mapped_column(sa.DateTime, nullable=True)
     
     review_id: so.Mapped[int] = so.mapped_column(

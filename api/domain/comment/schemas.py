@@ -1,12 +1,10 @@
 from datetime import datetime
 from pydantic import BaseModel, field_validator
 from domain.account.schemas import Account
-from domain.review.schemas import Review
 
 
 class CommentCreate(BaseModel):
     content: str
-    review: Review
 
     @field_validator("content")
     def not_empty(cls, v):
@@ -18,8 +16,8 @@ class CommentCreate(BaseModel):
 class Comment(BaseModel):
     id: int
     content: str
-    review: Review
     author: Account
+    review_id: int
     created_at: datetime
     updated_at: datetime | None = None
 

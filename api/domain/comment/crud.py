@@ -13,20 +13,11 @@ def create_comment(
     comment = Comment(
         content=comment_create.content,
         review=review,
-        create_at=datetime.now(UTC),
+        created_at=datetime.now(UTC),
         author=current_user,
     )
     db.add(comment)
     db.commit()
-
-
-def get_comment_list(db: so.Session, review: Review):
-    return (
-        db.query(Comment)
-        .filter(Comment.review == review)
-        .order_by(Comment.id.desc())
-        .all()
-    )
 
 
 def get_comment(db: so.Session, comment_id: int):

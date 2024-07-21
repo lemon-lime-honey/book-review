@@ -1,6 +1,8 @@
 from datetime import datetime
+from typing import List, Optional
 from pydantic import BaseModel, field_validator
 from domain.account.schemas import Account
+from domain.comment.schemas import Comment
 
 
 class ReviewCreate(BaseModel):
@@ -21,8 +23,9 @@ class Review(BaseModel):
     subject: str
     content: str
     created_at: datetime
-    updated_at: datetime | None = None
+    updated_at: Optional[datetime]
     author: Account
+    comments: Optional[List[Comment]]
 
 
 class ReviewUpdate(ReviewCreate):
