@@ -29,7 +29,7 @@ def comment_create(
     db: so.Session = Depends(get_db),
     current_user: Account = Depends(load_current_account),
 ):
-    review = r_crud.get_review(review_id)
+    review = r_crud.get_review(db, review_id)
     if review is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="후기가 존재하지 않습니다."
@@ -51,7 +51,7 @@ def comment_update(
     c_crud.update_comment(db, _comment_create, comment)
 
 
-@router.delete("/delete/{comment_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/delete", status_code=status.HTTP_204_NO_CONTENT)
 def comment_delete(
     _comment_delete: schemas.CommentDelete, db: so.Session = Depends(get_db)
 ):
@@ -60,4 +60,4 @@ def comment_delete(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="댓글이 존재하지 않습니다."
         )
-    c_crud.delete_comment(comment)
+    c_crud.delete_comment(db, comment)

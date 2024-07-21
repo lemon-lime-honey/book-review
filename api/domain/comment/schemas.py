@@ -7,7 +7,6 @@ from domain.review.schemas import Review
 class CommentCreate(BaseModel):
     content: str
     review: Review
-    author: Account
 
     @field_validator("content")
     def not_empty(cls, v):
