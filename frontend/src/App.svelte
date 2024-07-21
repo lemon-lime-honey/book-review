@@ -7,6 +7,7 @@
   import ReviewCreate from './routes/ReviewCreate.svelte';
   import ReviewDetail from './routes/ReviewDetail.svelte';
   import ReviewUpdate from './routes/ReviewUpdate.svelte';
+  import CommentUpdate from './routes/CommentUpdate.svelte';
 
   const routes = {
     '/': Index,
@@ -15,6 +16,7 @@
     '/review-create': ReviewCreate,
     '/review-detail/:review_id': ReviewDetail,
     '/review-update/:review_id': ReviewUpdate,
+    '/comment-update/:comment_id': CommentUpdate,
   };
 </script>
 
