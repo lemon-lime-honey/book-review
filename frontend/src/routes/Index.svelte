@@ -1,7 +1,12 @@
 <script>
   import fastapi from '../lib/api';
   import { link } from 'svelte-spa-router';
-  import moment from 'moment-timezone';
+  import dayjs from 'dayjs';
+  import 'dayjs/locale/ko';
+  import relativeTime from 'dayjs/plugin/relativeTime';
+
+  dayjs.extend(relativeTime);
+  dayjs.locale('ko');
 
   let review_list = [];
 
@@ -29,7 +34,7 @@
                 <p class="card-text text-secondary">{review.author.username}</p>
               </div>
               <p>
-                {moment(review.created_at).tz('Asia/Seoul').startOf('day').fromNow()}
+                {dayjs(review.created_at).fromNow()}
               </p>
             </a>
           </div>

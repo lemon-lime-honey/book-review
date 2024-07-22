@@ -27,7 +27,7 @@ def update_review(db: so.Session, review_update: schemas.ReviewUpdate, review: R
     review.book = review_update.book
     review.subject = review_update.subject
     review.content = review_update.content
-    review.updated_at = datetime.now()
+    review.updated_at = datetime.now(UTC)
     db.add(review)
     db.commit()
 

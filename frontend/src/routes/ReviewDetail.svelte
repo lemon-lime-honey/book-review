@@ -1,10 +1,13 @@
 <script>
   import { link, push } from 'svelte-spa-router';
   import fastapi from '../lib/api';
-  import moment from 'moment/min/moment-with-locales';
   import { is_login, username } from '../lib/store';
+  import dayjs from 'dayjs';
+  import 'dayjs/locale/ko';
+  import relativeTime from 'dayjs/plugin/relativeTime';
 
-  moment.locale('ko');
+  dayjs.extend(relativeTime);
+  dayjs.locale('ko');
 
   export let params = {};
 
@@ -67,8 +70,8 @@
       <div class="d-flex justify-content-between align-items-center mt-2">
         <p class="mb-0">{review.author.username}</p>
         <p class="small mb-0">
-          {moment(review.created_at).format('YY.MM.DD hh:mm')} 작성 {#if review.updated_at}
-            | {moment(review.updated_at).format('YY.MM.DD hh:mm')} 수정
+          {dayjs(review.created_at).format('YY.MM.DD hh:mm')} 작성 {#if review.updated_at}
+            | {dayjs(review.updated_at).format('YY.MM.DD hh:mm')} 수정
           {/if}
         </p>
       </div>
@@ -107,9 +110,9 @@
                     <p class="mb-0">{comment.author.username}</p>
                     <p class="text-body-secondary mb-0" style="font-size: 0.75rem">
                       {#if comment.updated_at}
-                        {moment(comment.updated_at).format('YY.MM.DD hh:mm')}
+                        {dayjs(comment.updated_at).format('YY.MM.DD hh:mm')}
                       {:else}
-                        {moment(comment.created_at).format('YY.MM.DD hh:mm')}
+                        {dayjs(comment.created_at).format('YY.MM.DD hh:mm')}
                       {/if}
                     </p>
                   </div>
