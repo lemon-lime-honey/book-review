@@ -9,8 +9,6 @@ class ReviewCreate(BaseModel):
     book: str
     subject: str
     content: str
-    like_accounts: Set[Account]
-    dislike_accounts: Set[Account]
 
     @field_validator("book", "subject", "content")
     def not_empty(cls, v):
@@ -28,6 +26,8 @@ class Review(BaseModel):
     updated_at: Optional[datetime]
     author: Account
     comments: Optional[List[Comment]]
+    like_accounts: Set[Account]
+    dislike_accounts: Set[Account]
 
 
 class ReviewUpdate(ReviewCreate):

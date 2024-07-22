@@ -50,17 +50,17 @@ class Account(Base):
     comments: so.Mapped[List["Comment"]] = so.relationship(
         back_populates="author", passive_deletes=True
     )
-    like_review: so.Mapped[Set["Review"]] = so.relationship(
-        secondary=like_review_table, back_populates="like_accounts"
+    like_reviews: so.Mapped[Set["Review"]] = so.relationship(
+        "Review", secondary=like_review_table, back_populates="like_accounts"
     )
-    dislike_review: so.Mapped[Set["Review"]] = so.relationship(
-        secondary=dislike_review_table, back_populates="dislike_accounts"
+    dislike_reviews: so.Mapped[Set["Review"]] = so.relationship(
+        "Review", secondary=dislike_review_table, back_populates="dislike_accounts"
     )
-    like_comment: so.Mapped[Set["Comment"]] = so.relationship(
-        secondary=like_comment_table, back_populates="like_accounts"
+    like_comments: so.Mapped[Set["Comment"]] = so.relationship(
+        "Comment", secondary=like_comment_table, back_populates="like_accounts"
     )
-    dislike_comment: so.Mapped[Set["Comment"]] = so.relationship(
-        secondary=dislike_comment_table, back_populates="dislike_accounts"
+    dislike_comments: so.Mapped[Set["Comment"]] = so.relationship(
+        "Comment", secondary=dislike_comment_table, back_populates="dislike_accounts"
     )
 
 
@@ -84,10 +84,10 @@ class Review(Base):
         back_populates="review", passive_deletes=True
     )
     like_accounts: so.Mapped[Set["Account"]] = so.relationship(
-        secondary=like_review_table, back_populates="like_reviews"
+        "Account", secondary=like_review_table, back_populates="like_reviews"
     )
     dislike_accounts: so.Mapped[Set["Account"]] = so.relationship(
-        secondary=dislike_review_table, back_populates="dislike_reviews"
+        "Account", secondary=dislike_review_table, back_populates="dislike_reviews"
     )
 
 
@@ -108,8 +108,8 @@ class Comment(Base):
     )
     author: so.Mapped["Account"] = so.relationship(back_populates="comments")
     like_accounts: so.Mapped[Set["Account"]] = so.relationship(
-        secondary=like_comment_table, back_populates="like_comments"
+        "Account", secondary=like_comment_table, back_populates="like_comments"
     )
     dislike_accounts: so.Mapped[Set["Account"]] = so.relationship(
-        secondary=dislike_comment_table, back_populates="dislike_comments"
+        "Account", secondary=dislike_comment_table, back_populates="dislike_comments"
     )
