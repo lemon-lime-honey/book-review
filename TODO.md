@@ -1,10 +1,7 @@
 # TODO
 
 - [ ] 회원정보 수정
-- [ ] 후기 추천
-- [ ] 댓글 추천
 - [ ] 회원 팔로우
-- [ ] timezone 문제 해결
 
 # DONE
 
@@ -42,4 +39,13 @@
 - [X] deprecation warning 해결
 - [X] 댓글 프론트
 - [X] 댓글 기능 오류 수정
+</details>
+
+<details>
+<summary>240722</summary>
+
+- [X] 후기 추천, 비추천
+- [X] 댓글 추천, 비추천
+- [X] timezone 문제 해결
+- [X] 테스트 추가
 </details>
