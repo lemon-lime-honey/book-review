@@ -20,6 +20,22 @@ def test_review_create(login_header, client, session):
     assert review.content == "test-content"
 
 
+def test_review_detail(login_header, client):
+    client.post(
+        "/api/review/create",
+        json={"book": "test-book", "subject": "test-title", "content": "test-content"},
+        headers=login_header,
+    )
+
+    response = client.get("/api/review/detail/1")
+    review = response.json()
+
+    assert response.status_code == 200
+    assert review.get("book") == "test-book"
+    assert review.get("subject") == "test-title"
+    assert review.get("content") == "test-content"
+
+
 def test_review_update(login_header, client, session):
     client.post(
         "/api/review/create",

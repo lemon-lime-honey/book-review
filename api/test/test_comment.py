@@ -16,8 +16,7 @@ def create_comment(login_header, client, session):
     review["author"] = author
 
     client.post(
-        "/api/comment/create",
-        params={"review_id": 1},
+        "/api/comment/create/1",
         json={"content": "comment", "review": review},
         headers=login_header,
     )
@@ -31,8 +30,7 @@ def test_comment_create(login_header, client, session):
     review["author"] = author
 
     response = client.post(
-        "/api/comment/create",
-        params={"review_id": 1},
+        "/api/comment/create/1",
         json={"content": "comment", "review": review},
         headers=login_header,
     )
@@ -52,7 +50,7 @@ def test_comment_update(login_header, client, session):
     review["author"] = author
 
     response = client.put(
-        "/api/comment/update/1",
+        "/api/comment/update",
         json={"comment_id": 1, "content": "comment-1", "review": review},
         headers=login_header,
     )
@@ -64,6 +62,21 @@ def test_comment_update(login_header, client, session):
     assert comment.content == "comment-1"
 
 
+def test_comment_get(login_header, client, session):
+    create_review(login_header, client)
+    create_comment(login_header, client, session)
+
+    response = client.get("/api/comment/detail/1")
+
+    assert response.status_code == 200
+
+    comment = response.json()
+
+    assert comment.get("content") == "comment"
+    assert comment.get("review_id") == 1
+    assert comment.get("author").get("id") == 1
+
+
 def test_comment_delete(login_header, client, session):
     create_review(login_header, client)
     create_comment(login_header, client, session)
@@ -73,7 +86,7 @@ def test_comment_delete(login_header, client, session):
     )
 
     assert response.status_code == 204
-    
+
     comment = session.get(Comment, 1)
-    
+
     assert comment is None
