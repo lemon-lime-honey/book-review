@@ -36,3 +36,19 @@ def update_comment(
 def delete_comment(db: so.Session, comment: Comment):
     db.delete(comment)
     db.commit()
+
+
+def like_comment(db: so.Session, comment: Comment, current_user: Account):
+    if current_user in comment.like_accounts:
+        comment.like_accounts.remove(current_user)
+    else:
+        comment.like_accounts.add(current_user)
+    db.commit()
+
+
+def dislike_comment(db: so.Session, comment: Comment, current_user: Account):
+    if current_user in comment.dislike_accounts:
+        comment.dislike_accounts.remove(current_user)
+    else:
+        comment.dislike_accounts.add(current_user)
+    db.commit()

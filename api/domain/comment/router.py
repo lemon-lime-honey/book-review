@@ -56,5 +56,45 @@ def comment_delete(
             status_code=status.HTTP_404_NOT_FOUND, detail="댓글이 존재하지 않습니다."
         )
     if current_user.id != comment.author.id:
-        raise HTTPException(status_code=status.HTTP_403, detail="삭제 권한이 없습니다.")
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="삭제 권한이 없습니다."
+        )
     c_crud.delete_comment(db, comment)
+
+
+@router.post("/like", status_code=status.HTTP_204_NO_CONTENT)
+def comment_like(
+    _comment_like: schemas.CommentLikeDislike,
+    db: so.Session = Depends(get_db),
+    current_user: Account = Depends(load_current_account),
+):
+    comment = c_crud.get_comment(db, _comment_like.comment_id)
+    if comment is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="댓글이 존재하지 않습니다."
+        )
+    if current_user in comment.dislike_accounts:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="싫어요를 누른 댓글에 좋아요를 누를 수는 없습니다.",
+        )
+    c_crud.like_comment(db, comment, current_user)
+
+
+@router.post("/dislike", status_code=status.HTTP_204_NO_CONTENT)
+def comment_dislike(
+    _comment_dislike: schemas.CommentLikeDislike,
+    db: so.Session = Depends(get_db),
+    current_user: Account = Depends(load_current_account),
+):
+    comment = c_crud.get_comment(db, _comment_dislike.comment_id)
+    if comment is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="댓글이 존재하지 않습니다."
+        )
+    if current_user in comment.like_accounts:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="싫어요를 누른 댓글에 좋아요를 누를 수는 없습니다.",
+        )
+    c_crud.dislike_comment(db, comment, current_user)
