@@ -90,3 +90,41 @@ def test_comment_delete(login_header, client, session):
     comment = session.get(Comment, 1)
 
     assert comment is None
+
+
+def test_comment_like(login_header, client, session):
+    create_review(login_header, client)
+    create_comment(login_header, client, session)
+
+    response = client.post(
+        "api/comment/like", headers=login_header, json={"comment_id": 1}
+    )
+
+    assert response.status_code == 204
+    assert len(session.get(Comment, 1).like_accounts) == 1
+
+    response = client.post(
+        "api/comment/like", headers=login_header, json={"comment_id": 1}
+    )
+
+    assert response.status_code == 204
+    assert len(session.get(Comment, 1).like_accounts) == 0
+
+
+def test_comment_dislike(login_header, client, session):
+    create_review(login_header, client)
+    create_comment(login_header, client, session)
+
+    response = client.post(
+        "api/comment/dislike", headers=login_header, json={"comment_id": 1}
+    )
+
+    assert response.status_code == 204
+    assert len(session.get(Comment, 1).dislike_accounts) == 1
+
+    response = client.post(
+        "api/comment/dislike", headers=login_header, json={"comment_id": 1}
+    )
+
+    assert response.status_code == 204
+    assert len(session.get(Comment, 1).dislike_accounts) == 0

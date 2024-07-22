@@ -1,6 +1,14 @@
 from models import Review
 
 
+def create_review(login_header, client):
+    client.post(
+        "/api/review/create",
+        json={"subject": "title", "book": "book", "content": "content"},
+        headers=login_header,
+    )
+
+
 def test_review_create(login_header, client, session):
     response = client.post(
         "/api/review/create",
@@ -88,3 +96,39 @@ def test_review_delete(login_header, client):
     response = client.get("/api/review/detail/1")
 
     assert response.status_code == 404
+
+
+def test_review_like(login_header, client, session):
+    create_review(login_header, client)
+
+    response = client.post(
+        "/api/review/like", headers=login_header, json={"review_id": 1}
+    )
+
+    assert response.status_code == 204
+    assert len(session.get(Review, 1).like_accounts) == 1
+
+    response = client.post(
+        "/api/review/like", headers=login_header, json={"review_id": 1}
+    )
+
+    assert response.status_code == 204
+    assert len(session.get(Review, 1).like_accounts) == 0
+
+
+def test_review_dislike(login_header, client, session):
+    create_review(login_header, client)
+
+    response = client.post(
+        "/api/review/dislike", headers=login_header, json={"review_id": 1}
+    )
+
+    assert response.status_code == 204
+    assert len(session.get(Review, 1).dislike_accounts) == 1
+
+    response = client.post(
+        "/api/review/dislike", headers=login_header, json={"review_id": 1}
+    )
+
+    assert response.status_code == 204
+    assert len(session.get(Review, 1).dislike_accounts) == 0
