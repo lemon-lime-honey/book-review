@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Optional, Set
 from pydantic import BaseModel, field_validator
 from domain.account.schemas import Account
 from domain.comment.schemas import Comment
@@ -9,6 +9,8 @@ class ReviewCreate(BaseModel):
     book: str
     subject: str
     content: str
+    like_accounts: Set[Account]
+    dislike_accounts: Set[Account]
 
     @field_validator("book", "subject", "content")
     def not_empty(cls, v):
@@ -33,4 +35,8 @@ class ReviewUpdate(ReviewCreate):
 
 
 class ReviewDelete(BaseModel):
+    review_id: int
+
+
+class ReviewLikeDislike(BaseModel):
     review_id: int

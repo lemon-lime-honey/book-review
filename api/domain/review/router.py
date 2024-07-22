@@ -56,3 +56,41 @@ def review_delete(
             status_code=status.HTTP_404_NOT_FOUND, detail="후기가 존재하지 않습니다."
         )
     crud.delete_review(db, review)
+
+
+@router.post("/like", status_code=status.HTTP_204_NO_CONTENT)
+def review_like(
+    _review_like: schemas.ReviewLikeDislike,
+    db: so.Session = Depends(get_db),
+    current_user: Account = Depends(load_current_account),
+):
+    review = crud.get_review(db, _review_like.review_id)
+    if review is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="후기가 존재하지 않습니다."
+        )
+    if current_user in review.dislike_accounts:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="싫어요를 누른 후기에 좋아요를 누를 수는 없습니다.",
+        )
+    crud.like_review(db, review, current_user)
+
+
+@router.post("/dislike", status_code=status.HTTP_204_NO_CONTENT)
+def review_dislike(
+    _review_dislike: schemas.ReviewLikeDislike,
+    db: so.Session = Depends(get_db),
+    current_user: Account = Depends(load_current_account),
+):
+    review = crud.get_review(db, _review_dislike.review_id)
+    if review is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="후기가 존재하지 않습니다."
+        )
+    if current_user in review.like_accounts:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="좋아요를 누른 후기에 싫어요를 누를 수는 없습니다.",
+        )
+    crud.dislike_review(db, review, current_user)

@@ -3,13 +3,16 @@ from datetime import datetime, UTC
 from domain.review import schemas
 from models import Account, Review
 
-def create_review(db: so.Session, review_create: schemas.ReviewCreate, current_user: Account):
+
+def create_review(
+    db: so.Session, review_create: schemas.ReviewCreate, current_user: Account
+):
     review = Review(
         book=review_create.book,
         subject=review_create.subject,
         content=review_create.content,
         created_at=datetime.now(UTC),
-        author=current_user
+        author=current_user,
     )
     db.add(review)
     db.commit()
@@ -34,4 +37,20 @@ def update_review(db: so.Session, review_update: schemas.ReviewUpdate, review: R
 
 def delete_review(db: so.Session, review: Review):
     db.delete(review)
+    db.commit()
+
+
+def like_review(db: so.Session, review: Review, current_user: Account):
+    if current_user in review.like_accounts:
+        review.like_accounts.remove(current_user)
+    else:
+        review.like_accounts.add(current_user)
+    db.commit()
+
+
+def dislike_review(db: so.Session, review: Review, current_user: Account):
+    if current_user in review.dislike_accounts:
+        review.dislike_accounts.remove(current_user)
+    else:
+        review.dislike_accounts.add(current_user)
     db.commit()
