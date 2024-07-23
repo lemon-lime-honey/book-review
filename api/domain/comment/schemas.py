@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional, Set
+from typing import List, Optional
 from pydantic import BaseModel, field_validator
 from domain.account.schemas import Account
 
@@ -21,8 +21,8 @@ class Comment(BaseModel):
     review_id: int
     created_at: datetime
     updated_at: datetime | None = None
-    like_accounts: Optional[Set[Account]]
-    dislike_accounts: Optional[Set[Account]]
+    like_accounts: Optional[List[Account]]
+    dislike_accounts: Optional[List[Account]]
 
 
 class CommentUpdate(CommentCreate):

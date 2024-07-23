@@ -44,7 +44,7 @@ def like_review(db: so.Session, review: Review, current_user: Account):
     if current_user in review.like_accounts:
         review.like_accounts.remove(current_user)
     else:
-        review.like_accounts.add(current_user)
+        review.like_accounts.append(current_user)
     db.commit()
 
 
@@ -52,5 +52,5 @@ def dislike_review(db: so.Session, review: Review, current_user: Account):
     if current_user in review.dislike_accounts:
         review.dislike_accounts.remove(current_user)
     else:
-        review.dislike_accounts.add(current_user)
+        review.dislike_accounts.append(current_user)
     db.commit()
