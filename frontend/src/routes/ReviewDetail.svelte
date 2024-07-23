@@ -5,6 +5,7 @@
   import dayjs from 'dayjs';
   import 'dayjs/locale/ko';
   import relativeTime from 'dayjs/plugin/relativeTime';
+  import Icon from '@iconify/svelte';
 
   dayjs.extend(relativeTime);
   dayjs.locale('ko');
@@ -12,12 +13,19 @@
   export let params = {};
 
   let review_id = params.review_id;
-  let review = { author: {}, comments: [] };
+  let review = { author: {}, comments: [], like_accounts: [], dislike_accounts: [] };
+  let comment_flag = [];
+  let review_flag = 0;
   let content = '';
 
   function get_review() {
     fastapi('get', '/api/review/detail/' + review_id, {}, (json) => {
+      comment_flag = [];
       review = json;
+      for (let i = 0; i < review.comments.length; i++) {
+        comment_flag.push(chk_like_comment(i));
+      }
+      chk_like_review();
     });
   }
 
@@ -60,12 +68,114 @@
       });
     }
   }
+
+  function like_review() {
+    let url = '/api/review/like';
+    let params = {
+      review_id: review.id,
+    };
+
+    fastapi('post', url, params, (json) => {
+      get_review();
+    });
+  }
+
+  function dislike_review() {
+    let url = '/api/review/dislike';
+    let params = {
+      review_id: review.id,
+    };
+
+    fastapi('post', url, params, (json) => {
+      get_review();
+    });
+  }
+
+  function like_comment(comment_id) {
+    let url = '/api/comment/like';
+    let params = {
+      comment_id: comment_id,
+    };
+
+    fastapi('post', url, params, (json) => {
+      get_review();
+    });
+  }
+
+  function dislike_comment(comment_id) {
+    let url = '/api/comment/dislike';
+    let params = {
+      comment_id: comment_id,
+    };
+
+    fastapi('post', url, params, (json) => {
+      get_review();
+    });
+  }
+
+  function chk_like_review() {
+    if (!$is_login) return;
+
+    for (let i = 0; i < review.like_accounts.length; i++) {
+      if (review.like_accounts[i].username == $username) {
+        review_flag = 1;
+        return;
+      }
+    }
+
+    for (let i = 0; i < review.dislike_accounts.length; i++) {
+      if (review.dislike_accounts[i].username == $username) {
+        review_flag = 2;
+        return;
+      }
+    }
+
+    review_flag = 0;
+    return;
+  }
+
+  function chk_like_comment(idx) {
+    if (!$is_login) return;
+
+    let comment = review.comments[idx];
+
+    if (typeof comment !== 'undefined') {
+      for (let i = 0; i < comment.like_accounts.length; i++) {
+        if (comment.like_accounts[i].username == $username) {
+          return 1;
+        }
+      }
+    }
+
+    if (typeof comment !== 'undefined') {
+      for (let i = 0; i < comment.dislike_accounts.length; i++) {
+        if (comment.dislike_accounts[i].username == $username) {
+          return 2;
+        }
+      }
+    }
+
+    return 0;
+  }
 </script>
 
 <div class="container">
   <div class="card border-light col-12 col-md-6 offset-md-3">
     <div class="card-header bg-transparent p-4">
-      <h3 class="card-title">{review.subject}</h3>
+      <div class="position-relative">
+        <h3 class="card-title">{review.subject}</h3>
+        <div class="position-absolute top-0 end-0">
+          {#if review.author.username == $username}
+            <a use:link href="/review-update/{review.id}" class="btn p-0">
+              <Icon icon="material-symbols:edit" />
+            </a>
+            <button class="btn p-0 ps-1" on:click="{() => delete_review(review.id)}">
+              <Icon icon="material-symbols:delete-outline" />
+            </button>
+          {/if}
+        </div>
+      </div>
+
       <h5 class="card-subtitle">{review.book}</h5>
       <div class="d-flex justify-content-between align-items-center mt-2">
         <p class="mb-0">{review.author.username}</p>
@@ -80,13 +190,27 @@
       <p class="card-text">{review.content}</p>
     </div>
     <hr />
-    {#if review.author.username == $username}
-      <div class="text-end mb-3">
-        <button class="btn btn-sm btn-danger" on:click="{() => delete_review(review.id)}">삭제</button>
-        <a use:link href="/review-update/{review.id}" class="btn btn-sm btn-success">수정</a>
+    <div class="text-center mb-3 align-items-center">
+      <div class="text-center d-flex align-items-center justify-content-center">
+        <button
+          class="btn border-0"
+          on:click="{() => like_review()}"
+          disabled="{review_flag === 2 || !$is_login || $username == review.author.username ? true : false}"
+        >
+          <span>{review.like_accounts.length}</span>
+          <Icon icon="{review_flag === 1 ? 'material-symbols:thumb-up' : 'material-symbols:thumb-up-outline'}" />
+        </button>
+        <button
+          class="btn border-0"
+          on:click="{() => dislike_review()}"
+          disabled="{review_flag === 1 || !$is_login || $username == review.author.username ? true : false}"
+        >
+          <Icon icon="{review_flag === 2 ? 'material-symbols:thumb-down' : 'material-symbols:thumb-down-outline'}" />
+          <span>{review.dislike_accounts.length}</span>
+        </button>
       </div>
-      <hr />
-    {/if}
+    </div>
+    <hr />
     {#if $is_login}
       <form method="post" class="mb-3">
         <div class="d-flex justify-content-between">
@@ -97,18 +221,19 @@
     {:else}
       <p class="text-center">비회원은 댓글을 작성할 수 없습니다</p>
     {/if}
-
     <div class="card-footer bg-transparent p-2">
       {#if review.comments}
         <table class="table table-borderless table-hover align-middle">
           <tbody>
-            {#each review.comments as comment}
+            {#each review.comments as comment, i}
               <tr>
-                <td class="text-break w-75">{comment.content}</td>
-                <td class="align-middle">
+                <td class="text-break w-75">
+                  {comment.content}
+                </td>
+                <td class="align-middle flex position-relative">
                   <div class="flex">
-                    <p class="mb-0">{comment.author.username}</p>
-                    <p class="text-body-secondary mb-0" style="font-size: 0.75rem">
+                    <p class="mb-0 text-center">{comment.author.username}</p>
+                    <p class="text-body-secondary mb-0 text-center" style="font-size: 0.65rem">
                       {#if comment.updated_at}
                         {dayjs(comment.updated_at).format('YY.MM.DD hh:mm')}
                       {:else}
@@ -116,19 +241,54 @@
                       {/if}
                     </p>
                   </div>
-                </td>
-                <td class="px-0">
-                  {#if review.author.username == $username}
-                    <a use:link href="/comment-update/{comment.id}" class="btn btn-sm btn-outline-success mb-1">수정</a>
-                    <button class="btn btn-sm btn-outline-danger" on:click="{() => delete_comment(comment.id)}">
-                      삭제
-                    </button>
-                  {:else}
+                  <div class="d-flex align-items-center justify-content-center">
                     <div class="flex">
-                      <button class="btn btn-sm mb-1">u</button>
-                      <button class="btn btn-sm">d</button>
+                      <button
+                        class="btn btn-sm border-0"
+                        on:click="{() => like_comment(comment.id)}"
+                        disabled="{comment_flag[i] === 2 || !$is_login || $username == comment.author.username
+                          ? true
+                          : false}"
+                      >
+                        <Icon
+                          icon="{comment_flag[i] === 1
+                            ? 'material-symbols:thumb-up'
+                            : 'material-symbols:thumb-up-outline'}"
+                        />
+                        <span style="font-size: 0.7rem">
+                          {comment.like_accounts.length}
+                        </span>
+                      </button>
                     </div>
-                  {/if}
+                    <div>
+                      <button
+                        class="btn btn-sm border-0"
+                        on:click="{() => dislike_comment(comment.id)}"
+                        disabled="{comment_flag[i] === 1 || !$is_login || $username == comment.author.username
+                          ? true
+                          : false}"
+                      >
+                        <Icon
+                          icon="{comment_flag[i] === 2
+                            ? 'material-symbols:thumb-down'
+                            : 'material-symbols:thumb-down-outline'}"
+                        />
+                        <span style="font-size: 0.7rem">
+                          {comment.dislike_accounts.length}
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                  <span class="position-absolute top-0 end-0 d-flex">
+                    {#if comment.author.username == $username}
+                      <a use:link href="/comment-update/{comment.id}" class="btn btn-sm p-0">
+                        <Icon icon="material-symbols:edit" width="0.7rem" height="0.7rem" />
+                      </a>
+                      <button class="btn btn-sm p-0 ps-1" on:click="{() => delete_comment(comment.id)}">
+                        <Icon icon="material-symbols:delete-outline" width="0.7rem" height="0.7rem" />
+                      </button>
+                    {/if}
+                  </span>
                 </td>
               </tr>
             {/each}

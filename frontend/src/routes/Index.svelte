@@ -4,6 +4,7 @@
   import dayjs from 'dayjs';
   import 'dayjs/locale/ko';
   import relativeTime from 'dayjs/plugin/relativeTime';
+  import Icon from '@iconify/svelte';
 
   dayjs.extend(relativeTime);
   dayjs.locale('ko');
@@ -27,15 +28,25 @@
       {#each review_list as review}
         <div class="col card border-light">
           <div class="card-body">
-            <a use:link href="/review-detail/{review.id}" class="text-reset link-underline link-underline-opacity-0">
-              <h4 class="card-title text-truncate">{review.subject}</h4>
+            <a
+              use:link
+              href="/review-detail/{review.id}"
+              class="text-reset link-underline link-underline-opacity-0 position-relative"
+            >
+              <h2 class="card-title text-truncate">{review.subject}</h2>
+              <h5 class="card-subtitle">{review.book}</h5>
               <div class="d-flex justify-content-between align-items-center">
-                <h6 class="card-subtitle">{review.book}</h6>
+                <p class="card-text m-0 mt-2">
+                  {dayjs(review.created_at).fromNow()}
+                </p>
                 <p class="card-text text-secondary">{review.author.username}</p>
               </div>
-              <p>
-                {dayjs(review.created_at).fromNow()}
-              </p>
+
+              <div class="position-absolute top-0 end-0">
+                <span>{review.like_accounts.length}</span>
+                <Icon icon="material-symbols:thumbs-up-down" />
+                <span>{review.dislike_accounts.length}</span>
+              </div>
             </a>
           </div>
         </div>
