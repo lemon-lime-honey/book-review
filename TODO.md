@@ -49,3 +49,10 @@
 - [X] timezone 문제 해결
 - [X] 테스트 추가
 </details>
+
+<details>
+<summary>240722</summary>
+
+- [X] 추천, 비추천을 눌렀을 때 발생하던 오류 해결
+- [X] 추천, 비추천 프론트
+</details>
