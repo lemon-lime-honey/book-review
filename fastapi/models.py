@@ -33,6 +33,13 @@ dislike_comment_table = sa.Table(
     sa.Column("dislike_comment", sa.ForeignKey("comment.id"), primary_key=True),
 )
 
+follow_table = sa.Table(
+    "follow_table",
+    Base.metadata,
+    sa.Column("follower_id", sa.Integer, sa.ForeignKey("account.id"), primary_key=True),
+    sa.Column("followed_id", sa.Integer, sa.ForeignKey("account.id"), primary_key=True),
+)
+
 
 class Account(Base):
     __tablename__ = "account"
@@ -61,6 +68,20 @@ class Account(Base):
     )
     dislike_comments: so.Mapped[List["Comment"]] = so.relationship(
         "Comment", secondary=dislike_comment_table, back_populates="dislike_accounts"
+    )
+    following: so.Mapped[List["Account"]] = so.relationship(
+        "Account",
+        secondary=follow_table,
+        primaryjoin=(follow_table.c.follower_id == id),
+        secondaryjoin=(follow_table.c.followed_id == id),
+        back_populates="followers",
+    )
+    followers: so.Mapped[List["Account"]] = so.relationship(
+        "Account",
+        secondary=follow_table,
+        primaryjoin=(follow_table.c.followed_id == id),
+        secondaryjoin=(follow_table.c.follower_id == id),
+        back_populates="following",
     )
 
 
