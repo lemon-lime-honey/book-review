@@ -8,6 +8,7 @@ from jose import jwt, JWTError
 from starlette import status
 from domain.account import schemas, crud
 from database import get_db
+from models import Account
 
 load_dotenv()
 
@@ -21,6 +22,28 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/account/login")
 router = APIRouter(prefix="/api/account")
 
 
+def load_current_account(
+    token: str = Depends(oauth2_scheme), db: so.Session = Depends(get_db)
+):
+    credential_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token, SECRET_KEY, ALGORITHM)
+        username: str = payload.get("sub")
+        if username is None:
+            raise credential_exception
+    except JWTError:
+        raise credential_exception
+    else:
+        account = crud.find_account(db, username)
+        if account is None:
+            raise credential_exception
+        return account
+
+
 @router.post("/create", status_code=status.HTTP_204_NO_CONTENT)
 def account_create(
     _account_create: schemas.AccountCreate, db: so.Session = Depends(get_db)
@@ -30,6 +53,11 @@ def account_create(
             status_code=status.HTTP_409_CONFLICT, detail="이미 존재하는 회원입니다."
         )
     crud.create_account(db, _account_create)
+
+
+@router.get("/get/{username}", response_model=schemas.Account)
+def account_get(username: str, db: so.Session = Depends(get_db)):
+    return crud.find_account(db, username)
 
 
 @router.post("/login", response_model=schemas.Token)
@@ -56,23 +84,15 @@ def login(
     }
 
 
-def load_current_account(
-    token: str = Depends(oauth2_scheme), db: so.Session = Depends(get_db)
+@router.post("/follow", status_code=status.HTTP_204_NO_CONTENT)
+def follow(
+    _follow: schemas.Follow,
+    db: so.Session = Depends(get_db),
+    current_user: Account = Depends(load_current_account),
 ):
-    credential_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-    try:
-        payload = jwt.decode(token, SECRET_KEY, ALGORITHM)
-        username: str = payload.get("sub")
-        if username is None:
-            raise credential_exception
-    except JWTError:
-        raise credential_exception
-    else:
-        account = crud.find_account(db, username)
-        if account is None:
-            raise credential_exception
-        return account
+    account = db.get(Account, _follow.account_id)
+    if not account:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="존재하지 않는 회원입니다."
+        )
+    crud.follow(db, account, current_user)
