@@ -82,3 +82,40 @@ def login_header(client, create_account):
         "username": res["username"],
     }
     return headers
+
+
+@pytest.fixture
+def create_two_accounts(client):
+    client.post(
+        "/api/account/create",
+        json={
+            "username": "test",
+            "password1": "test",
+            "password2": "test",
+            "email": "test@example.com",
+        },
+    )
+
+    client.post(
+        "/api/account/create",
+        json={
+            "username": "test2",
+            "password1": "test2",
+            "password2": "test2",
+            "email": "test2@example.com",
+        },
+    )
+
+
+@pytest.fixture
+def login_header_second(client, create_two_accounts):
+    res = json.loads(
+        client.post(
+            "/api/account/login", data={"username": "test", "password": "test"}
+        ).text
+    )
+    headers = {
+        "Authorization": f"Bearer {res['access_token']}",
+        "username": res["username"],
+    }
+    return headers
