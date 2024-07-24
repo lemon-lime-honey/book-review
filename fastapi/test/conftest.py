@@ -1,5 +1,6 @@
 import json, pytest
-from datetime import datetime, timedelta, UTC
+from datetime import date, datetime, timedelta, UTC
+from fastapi.encoders import jsonable_encoder
 from fastapi.testclient import TestClient
 from jose import jwt
 from sqlalchemy import create_engine
@@ -66,6 +67,8 @@ def create_account(client):
             "password1": "test",
             "password2": "test",
             "email": "test@example.com",
+            "birthday": jsonable_encoder(date.today()),
+            "summary": "test",
         },
     )
 
@@ -93,6 +96,8 @@ def create_two_accounts(client):
             "password1": "test",
             "password2": "test",
             "email": "test@example.com",
+            "birthday": jsonable_encoder(date.today()),
+            "summary": "test",
         },
     )
 
@@ -103,6 +108,8 @@ def create_two_accounts(client):
             "password1": "test2",
             "password2": "test2",
             "email": "test2@example.com",
+            "birthday": jsonable_encoder(date.today()),
+            "summary": "test2",
         },
     )
 

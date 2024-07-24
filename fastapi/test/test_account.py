@@ -1,3 +1,5 @@
+from datetime import date
+from fastapi.encoders import jsonable_encoder
 from models import Account
 
 
@@ -9,6 +11,8 @@ def test_create_account(client, session):
             "password1": "test",
             "password2": "test",
             "email": "test@example.com",
+            "birthday": jsonable_encoder(date.today()),
+            "summary": "test",
         },
     )
 
@@ -17,7 +21,8 @@ def test_create_account(client, session):
     assert response.status_code == 204
     assert account.username == "test"
     assert account.email == "test@example.com"
-    assert account.password != "test"
+    assert account.birthday == date.today()
+    assert account.summary == "test"
 
 
 def test_get_account(client, session, create_account):
