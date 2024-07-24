@@ -38,8 +38,14 @@ class Account(AccountBase):
     last_visit: Optional[datetime]
     followers: List[AccountBase]
     following: List[AccountBase]
-    class Config:
-        orm_mode = True
+
+
+class AccountUpdate(BaseModel):
+    id: int
+    username: str
+    email: str
+    birthday: date
+    summary: str
 
 
 class Token(BaseModel):

@@ -85,6 +85,24 @@ def login(
     }
 
 
+@router.put("/update", status_code=status.HTTP_204_NO_CONTENT)
+def account_update(
+    _account_update: schemas.AccountUpdate,
+    db: so.Session = Depends(get_db),
+    current_user: Account = Depends(load_current_account),
+):
+    account = db.get(Account, _account_update.id)
+    if not account:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="계정을 찾을 수 없습니다."
+        )
+    if account.id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="다른 계정입니다."
+        )
+    crud.update_account(db, _account_update, account)
+
+
 @router.post("/follow", status_code=status.HTTP_204_NO_CONTENT)
 def follow(
     _follow: schemas.Follow,

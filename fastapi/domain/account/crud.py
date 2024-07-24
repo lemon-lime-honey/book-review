@@ -39,6 +39,16 @@ def find_account(db: so.Session, username: str):
     return db.query(Account).filter(Account.username == username).first()
 
 
+def update_account(db: so.Session, account_update: schemas.AccountUpdate, account: Account):
+    account.username = account_update.username
+    account.email = account_update.email
+    account.birthday = account_update.birthday
+    account.summary = account_update.summary
+
+    db.add(account)
+    db.commit()
+
+
 def follow(db: so.Session, account: Account, current_user: Account):
     if current_user in account.followers:
         account.followers.remove(current_user)
