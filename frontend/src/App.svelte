@@ -4,6 +4,7 @@
   import Index from './routes/Index.svelte';
   import AccountCreate from './routes/AccountCreate.svelte';
   import AccountLogin from './routes/AccountLogin.svelte';
+  import AccountProfile from './routes/AccountProfile.svelte';
   import ReviewCreate from './routes/ReviewCreate.svelte';
   import ReviewDetail from './routes/ReviewDetail.svelte';
   import ReviewUpdate from './routes/ReviewUpdate.svelte';
@@ -13,6 +14,7 @@
     '/': Index,
     '/account-create': AccountCreate,
     '/account-login': AccountLogin,
+    '/account-profile/:username': AccountProfile,
     '/review-create': ReviewCreate,
     '/review-detail/:review_id': ReviewDetail,
     '/review-update/:review_id': ReviewUpdate,

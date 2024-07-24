@@ -1,5 +1,5 @@
 import qs from 'qs';
-import { access_token, username, is_login } from './store';
+import { access_token, user_id, is_login } from './store';
 import { get } from 'svelte/store';
 
 const fastapi = (operation, url, params, success_callback, failure_callback) => {

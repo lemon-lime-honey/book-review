@@ -1,3 +1,4 @@
+from typing import List
 from pydantic import BaseModel, field_validator, EmailStr
 from pydantic_core.core_schema import ValidationInfo
 
@@ -21,16 +22,23 @@ class AccountCreate(BaseModel):
         return v
 
 
-class Account(BaseModel):
+class AccountBase(BaseModel):
     id: int
+
+
+class Account(AccountBase):
     username: str
     email: str
+    followers: List[AccountBase]
+    following: List[AccountBase]
+    class Config:
+        orm_mode = True
 
 
 class Token(BaseModel):
     access_token: str
     token_type: str
-    username: str
+    user_id: int
 
 
 class Follow(BaseModel):

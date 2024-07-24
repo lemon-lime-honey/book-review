@@ -1,11 +1,11 @@
 <script>
   import { link } from 'svelte-spa-router';
-  import { access_token, username, is_login } from '../lib/store';
+  import { access_token, user_id, is_login } from '../lib/store';
 
   function logout(event) {
     event.preventDefault();
     $access_token = '';
-    $username = '';
+    $user_id = 0;
     $is_login = false;
   }
 </script>

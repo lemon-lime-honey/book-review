@@ -1,7 +1,7 @@
 <script>
   import { link, push } from 'svelte-spa-router';
   import fastapi from '../lib/api';
-  import { is_login, username } from '../lib/store';
+  import { is_login, user_id } from '../lib/store';
   import dayjs from 'dayjs';
   import 'dayjs/locale/ko';
   import relativeTime from 'dayjs/plugin/relativeTime';
@@ -117,14 +117,14 @@
     if (!$is_login) return;
 
     for (let i = 0; i < review.like_accounts.length; i++) {
-      if (review.like_accounts[i].username == $username) {
+      if (review.like_accounts[i].username == $user_id) {
         review_flag = 1;
         return;
       }
     }
 
     for (let i = 0; i < review.dislike_accounts.length; i++) {
-      if (review.dislike_accounts[i].username == $username) {
+      if (review.dislike_accounts[i].username == $user_id) {
         review_flag = 2;
         return;
       }
@@ -141,7 +141,7 @@
 
     if (typeof comment !== 'undefined') {
       for (let i = 0; i < comment.like_accounts.length; i++) {
-        if (comment.like_accounts[i].username == $username) {
+        if (comment.like_accounts[i].username == $user_id) {
           return 1;
         }
       }
@@ -149,7 +149,7 @@
 
     if (typeof comment !== 'undefined') {
       for (let i = 0; i < comment.dislike_accounts.length; i++) {
-        if (comment.dislike_accounts[i].username == $username) {
+        if (comment.dislike_accounts[i].username == $user_id) {
           return 2;
         }
       }
@@ -165,7 +165,7 @@
       <div class="position-relative">
         <h3 class="card-title">{review.subject}</h3>
         <div class="position-absolute top-0 end-0">
-          {#if review.author.username == $username}
+          {#if review.author.username == $user_id}
             <a use:link href="/review-update/{review.id}" class="btn p-0">
               <Icon icon="material-symbols:edit" />
             </a>
@@ -178,7 +178,13 @@
 
       <h5 class="card-subtitle">{review.book}</h5>
       <div class="d-flex justify-content-between align-items-center mt-2">
-        <p class="mb-0">{review.author.username}</p>
+        <a
+          use:link
+          href="/account-profile/{review.author.username}"
+          class="mb-0 text-reset link-underline link-underline-opacity-0"
+        >
+          {review.author.username}
+        </a>
         <p class="small mb-0">
           {dayjs(review.created_at).format('YY.MM.DD hh:mm')} 작성 {#if review.updated_at}
             | {dayjs(review.updated_at).format('YY.MM.DD hh:mm')} 수정
@@ -195,7 +201,7 @@
         <button
           class="btn border-0"
           on:click="{() => like_review()}"
-          disabled="{review_flag === 2 || !$is_login || $username == review.author.username ? true : false}"
+          disabled="{review_flag === 2 || !$is_login || $user_id == review.author.username ? true : false}"
         >
           <span>{review.like_accounts.length}</span>
           <Icon icon="{review_flag === 1 ? 'material-symbols:thumb-up' : 'material-symbols:thumb-up-outline'}" />
@@ -203,7 +209,7 @@
         <button
           class="btn border-0"
           on:click="{() => dislike_review()}"
-          disabled="{review_flag === 1 || !$is_login || $username == review.author.username ? true : false}"
+          disabled="{review_flag === 1 || !$is_login || $user_id == review.author.username ? true : false}"
         >
           <Icon icon="{review_flag === 2 ? 'material-symbols:thumb-down' : 'material-symbols:thumb-down-outline'}" />
           <span>{review.dislike_accounts.length}</span>
@@ -232,7 +238,15 @@
                 </td>
                 <td class="align-middle flex position-relative">
                   <div class="flex">
-                    <p class="mb-0 text-center">{comment.author.username}</p>
+                    <div class="text-center">
+                      <a
+                        use:link
+                        href="/account-profile/{comment.author.username}"
+                        class="mb-0 link-underline link-underline-opacity-0 text-reset"
+                      >
+                        {comment.author.username}
+                      </a>
+                    </div>
                     <p class="text-body-secondary mb-0 text-center" style="font-size: 0.65rem">
                       {#if comment.updated_at}
                         {dayjs(comment.updated_at).format('YY.MM.DD hh:mm')}
@@ -246,7 +260,7 @@
                       <button
                         class="btn btn-sm border-0"
                         on:click="{() => like_comment(comment.id)}"
-                        disabled="{comment_flag[i] === 2 || !$is_login || $username == comment.author.username
+                        disabled="{comment_flag[i] === 2 || !$is_login || $user_id == comment.author.username
                           ? true
                           : false}"
                       >
@@ -264,7 +278,7 @@
                       <button
                         class="btn btn-sm border-0"
                         on:click="{() => dislike_comment(comment.id)}"
-                        disabled="{comment_flag[i] === 1 || !$is_login || $username == comment.author.username
+                        disabled="{comment_flag[i] === 1 || !$is_login || $user_id == comment.author.username
                           ? true
                           : false}"
                       >
@@ -280,7 +294,7 @@
                     </div>
                   </div>
                   <span class="position-absolute top-0 end-0 d-flex">
-                    {#if comment.author.username == $username}
+                    {#if comment.author.username == $user_id}
                       <a use:link href="/comment-update/{comment.id}" class="btn btn-sm p-0">
                         <Icon icon="material-symbols:edit" width="0.7rem" height="0.7rem" />
                       </a>
