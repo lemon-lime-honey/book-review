@@ -6,6 +6,8 @@
   let password1 = '';
   let password2 = '';
   let email = '';
+  let birthday = null;
+  let summary = '';
 
   function post_account(event) {
     event.preventDefault();
@@ -16,6 +18,8 @@
       password1: password1,
       password2: password2,
       email: email,
+      birthday: birthday,
+      summary: summary,
     };
 
     fastapi('post', url, params, (json) => {
@@ -44,6 +48,15 @@
         <div class="form-floating mb-2">
           <input type="text" class="form-control" id="email" placeholder="email" bind:value="{email}" />
           <label for="email">이메일</label>
+        </div>
+        <div class="mb-2">
+          <label for="birthday">생년월일</label>
+          <input type="date" class="form-control" id="birthday" placeholder="birthday" bind:value="{birthday}" />
+        </div>
+        <div class="form-floating mb-2">
+          <textarea id="summary" class="form-control" placeholder="summary" style="height: 100px" bind:value="{summary}"
+          ></textarea>
+          <label for="summary">자기소개</label>
         </div>
         <button class="btn btn-outline-success" on:click="{post_account}">가입</button>
       </form>
