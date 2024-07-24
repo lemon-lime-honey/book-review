@@ -35,7 +35,7 @@ def test_login(client, create_account):
     )
 
     assert response.status_code == 200
-    assert response.json().get("username") == "test"
+    assert response.json().get("user_id") == 1
 
 
 def test_follow(login_header_second, create_two_accounts, session, client):

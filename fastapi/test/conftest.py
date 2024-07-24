@@ -79,7 +79,7 @@ def login_header(client, create_account):
     )
     headers = {
         "Authorization": f"Bearer {res['access_token']}",
-        "username": res["username"],
+        "user_id": f"{res["user_id"]}",
     }
     return headers
 
@@ -116,6 +116,6 @@ def login_header_second(client, create_two_accounts):
     )
     headers = {
         "Authorization": f"Bearer {res['access_token']}",
-        "username": res["username"],
+        "user_id": f"{res["user_id"]}",
     }
     return headers
