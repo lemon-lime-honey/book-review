@@ -1,4 +1,5 @@
-from typing import List
+from datetime import datetime, date
+from typing import List, Optional
 from pydantic import BaseModel, field_validator, EmailStr
 from pydantic_core.core_schema import ValidationInfo
 
@@ -8,6 +9,8 @@ class AccountCreate(BaseModel):
     password1: str
     password2: str
     email: EmailStr
+    birthday: date
+    summary: str
 
     @field_validator("username", "password1", "password2", "email")
     def not_empty(cls, v):
@@ -29,6 +32,10 @@ class AccountBase(BaseModel):
 class Account(AccountBase):
     username: str
     email: str
+    birthday: date
+    summary: str
+    created_at: datetime
+    last_visit: Optional[datetime]
     followers: List[AccountBase]
     following: List[AccountBase]
     class Config:

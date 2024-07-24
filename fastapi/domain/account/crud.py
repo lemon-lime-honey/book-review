@@ -1,4 +1,5 @@
 import sqlalchemy.orm as so
+from datetime import datetime, UTC
 from passlib.context import CryptContext
 from domain.account import schemas
 from models import Account
@@ -11,6 +12,9 @@ def create_account(db: so.Session, account_create: schemas.AccountCreate):
         username=account_create.username,
         password=pwd_context.hash(account_create.password1),
         email=account_create.email,
+        birthday=account_create.birthday,
+        summary=account_create.summary,
+        created_at=datetime.now(UTC)
     )
     db.add(account)
     db.commit()
@@ -29,7 +33,7 @@ def check_account(db: so.Session, account_create: schemas.AccountCreate):
 
 def get_account(db: so.Session, account_id: int):
     return db.get(Account, account_id)
-    
+
 
 def find_account(db: so.Session, username: str):
     return db.query(Account).filter(Account.username == username).first()

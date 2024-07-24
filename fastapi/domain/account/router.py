@@ -76,6 +76,7 @@ def login(
         "exp": datetime.now(UTC) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
     }
     access_token = jwt.encode(claims, SECRET_KEY, ALGORITHM)
+    account.last_visit = datetime.now(UTC)
 
     return {
         "access_token": access_token,

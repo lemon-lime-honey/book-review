@@ -1,6 +1,6 @@
 import sqlalchemy as sa
 import sqlalchemy.orm as so
-from datetime import datetime
+from datetime import datetime, date
 from typing import List, Optional
 from database import Base
 
@@ -50,6 +50,10 @@ class Account(Base):
     )
     password: so.Mapped[str] = so.mapped_column(sa.String, nullable=False)
     email: so.Mapped[str] = so.mapped_column(sa.String, unique=True, nullable=False)
+    birthday: so.Mapped[date] = so.mapped_column(sa.Date, nullable=True)
+    summary: so.Mapped[str] = so.mapped_column(sa.String(300))
+    created_at: so.Mapped[datetime] = so.mapped_column(sa.DateTime)
+    last_visit: so.Mapped[datetime] = so.mapped_column(sa.DateTime, nullable=True)
 
     reviews: so.Mapped[List["Review"]] = so.relationship(
         back_populates="author", passive_deletes=True
