@@ -43,6 +43,28 @@ def test_login(client, create_account):
     assert response.json().get("user_id") == 1
 
 
+def test_update_account(client, session, create_account, login_header):
+    response = client.put(
+        "/api/account/update",
+        json={
+            "id": 1,
+            "username": "test1",
+            "email": "test1@example.com",
+            "birthday": jsonable_encoder(date(2000, 1, 1)),
+            "summary": "test1",
+        },
+        headers=login_header,
+    )
+    
+    account = session.get(Account, 1)
+
+    assert response.status_code == 204
+    assert account.username == "test1"
+    assert account.email == "test1@example.com"
+    assert account.birthday == date(2000, 1, 1)
+    assert account.summary == "test1"
+
+
 def test_follow(login_header_second, create_two_accounts, session, client):
     response = client.post(
         "/api/account/follow", json={"account_id": 2}, headers=login_header_second
