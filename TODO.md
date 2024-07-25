@@ -67,3 +67,9 @@
 - [X] 회원정보 수정
 - [X] 테스트 추가
 </details>
+
+<details>
+<summary>240725</summary>
+
+- [X] 후기, 댓글 페이지네이션 적용
+</details>
