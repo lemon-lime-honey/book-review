@@ -5,7 +5,7 @@
   import dayjs from 'dayjs';
   import 'dayjs/locale/ko';
   import relativeTime from 'dayjs/plugin/relativeTime';
-  import Icon from '@iconify/svelte';
+  import Icon, { _api } from '@iconify/svelte';
 
   dayjs.extend(relativeTime);
   dayjs.locale('ko');
@@ -13,10 +13,15 @@
   export let params = {};
 
   let review_id = params.review_id;
-  let review = { author: {}, comments: [], like_accounts: [], dislike_accounts: [] };
+  let review = { author: {}, like_accounts: [], dislike_accounts: [] };
+  let comment_list = [];
   let comment_flag = [];
   let review_flag = 0;
   let content = '';
+  let size = 10;
+  let page = 0;
+  let total = 0;
+  $: total_page = Math.ceil(total / size);
 
   function get_review() {
     fastapi('get', '/api/review/detail/' + review_id, {}, (json) => {
@@ -26,6 +31,18 @@
         comment_flag.push(chk_like_comment(i));
       }
       chk_like_review();
+      get_comment_list(page);
+    });
+  }
+
+  function get_comment_list(_page) {
+    let url = '/api/comment/list/' + review_id;
+    let params = { page: _page, size: size };
+
+    fastapi('get', url, { review_id: review_id }, (json) => {
+      comment_list = json.comment_list;
+      page = _page;
+      total = json.total;
     });
   }
 
@@ -231,7 +248,7 @@
       {#if review.comments}
         <table class="table table-borderless table-hover align-middle">
           <tbody>
-            {#each review.comments as comment, i}
+            {#each comment_list as comment, i}
               <tr>
                 <td class="text-break w-75">
                   {comment.content}
@@ -308,6 +325,25 @@
             {/each}
           </tbody>
         </table>
+        <ul class="pagination pagination-sm justify-content-center align-items-center">
+          <li class="page-item {page <= 0 && 'disabled'}">
+            <button class="page-link" on:click="{() => get_comment_list(page - 1)}">
+              <Icon icon="material-symbols:keyboard-double-arrow-left" />
+            </button>
+          </li>
+          {#each Array(total_page) as _, loop_page}
+            {#if loop_page >= page - 5 && loop_page <= page + 5}
+              <li class="page-item {loop_page === page && 'active'}">
+                <button on:click="{() => get_comment_list(loop_page)}" class="page-link">{loop_page + 1}</button>
+              </li>
+            {/if}
+          {/each}
+          <li class="page-item {page >= total_page - 1 && 'disabled'}">
+            <button on:click="{() => get_comment_list(page + 1)}" class="page-link">
+              <Icon icon="material-symbols:keyboard-double-arrow-right" />
+            </button>
+          </li>
+        </ul>
       {:else}
         <p>아직 댓글이 없어요</p>
       {/if}

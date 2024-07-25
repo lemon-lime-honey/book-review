@@ -39,6 +39,16 @@ def comment_update(
     c_crud.update_comment(db, _comment_create, comment)
 
 
+@router.get("/list/{review_id}", response_model=schemas.CommentList)
+def comment_list(
+    review_id: int, db: so.Session = Depends(get_db), page: int = 0, size: int = 10
+):
+    total, _comment_list = c_crud.get_comment_list(
+        db, review_id, skip=page * size, limit=size
+    )
+    return {"total": total, "comment_list": _comment_list}
+
+
 @router.get("/detail/{comment_id}", response_model=schemas.Comment)
 def comment_detail(comment_id: int, db: so.Session = Depends(get_db)):
     return c_crud.get_comment(db, comment_id)

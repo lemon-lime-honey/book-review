@@ -28,20 +28,29 @@ def test_review_create(login_header, client, session):
     assert review.content == "test-content"
 
 
+def test_review_list(login_header, client):
+    create_review(login_header, client)
+    create_review(login_header, client)
+
+    response = client.get("/api/review/list")
+    data = response.json()
+
+    assert response.status_code == 200
+    assert data.get("total") == 2
+    assert len(data.get("review_list")) == 2
+    assert data.get("review_list")[0].get("book") == "book"
+
+
 def test_review_detail(login_header, client):
-    client.post(
-        "/api/review/create",
-        json={"book": "test-book", "subject": "test-title", "content": "test-content"},
-        headers=login_header,
-    )
+    create_review(login_header, client)
 
     response = client.get("/api/review/detail/1")
     review = response.json()
 
     assert response.status_code == 200
-    assert review.get("book") == "test-book"
-    assert review.get("subject") == "test-title"
-    assert review.get("content") == "test-content"
+    assert review.get("book") == "book"
+    assert review.get("subject") == "title"
+    assert review.get("content") == "content"
 
 
 def test_review_update(login_header, client, session):

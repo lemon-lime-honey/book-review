@@ -10,16 +10,24 @@
   dayjs.locale('ko');
 
   let review_list = [];
+  let size = 12;
+  let page = 0;
+  let total = 0;
+  $: total_page = Math.ceil(total / size);
 
-  function get_review_list() {
+  function get_review_list(_page) {
     let url = '/api/review/list';
+    let params = { page: _page, size: size };
 
-    fastapi('get', url, {}, (json) => {
-      review_list = json;
+    fastapi('get', url, params, (json) => {
+      review_list = review_list.concat(json.review_list);
+      page = _page;
+      total = json.total;
+      console.log(review_list);
     });
   }
 
-  get_review_list();
+  get_review_list(0);
 </script>
 
 <div class="container">
@@ -41,7 +49,6 @@
                 </p>
                 <p class="card-text text-secondary">{review.author.username}</p>
               </div>
-
               <div class="position-absolute top-0 end-0">
                 <span>{review.like_accounts.length}</span>
                 <Icon icon="material-symbols:thumbs-up-down" />
@@ -53,4 +60,11 @@
       {/each}
     {/if}
   </div>
+  {#if review_list && page < total_page - 1}
+    <div class="d-flex justify-content-center">
+      <button on:click="{() => get_review_list(page + 1)}" class="btn text-center">
+        <Icon icon="material-symbols:more-vert" width="2em" height="2em" />
+      </button>
+    </div>
+  {/if}
 </div>

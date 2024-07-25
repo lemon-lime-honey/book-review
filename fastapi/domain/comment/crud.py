@@ -24,6 +24,13 @@ def get_comment(db: so.Session, comment_id: int):
     return db.get(Comment, comment_id)
 
 
+def get_comment_list(db: so.Session, review_id: int, skip: int = 0, limit: int = 10):
+    _comment_list = db.query(Comment).filter_by(review_id=review_id).order_by(Comment.id.asc())
+    total = _comment_list.count()
+    comment_list = _comment_list.offset(skip).limit(limit).all()
+    return total, comment_list
+
+
 def update_comment(
     db: so.Session, comment_update: schemas.CommentUpdate, comment: Comment
 ):

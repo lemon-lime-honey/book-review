@@ -30,6 +30,11 @@ class Review(BaseModel):
     dislike_accounts: List[Account]
 
 
+class ReviewList(BaseModel):
+    total: int = 0
+    review_list: List[Review]
+
+
 class ReviewUpdate(ReviewCreate):
     review_id: int
 

@@ -18,8 +18,11 @@ def create_review(
     db.commit()
 
 
-def get_review_list(db: so.Session):
-    return db.query(Review).order_by(Review.id.desc()).all()
+def get_review_list(db: so.Session, skip: int = 0, limit: int = 12):
+    _review_list = db.query(Review).order_by(Review.id.desc())
+    total = _review_list.count()
+    review_list = _review_list.offset(skip).limit(limit).all()
+    return total, review_list
 
 
 def get_review(db: so.Session, review_id: int):

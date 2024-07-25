@@ -77,6 +77,19 @@ def test_comment_get(login_header, client, session):
     assert comment.get("author").get("id") == 1
 
 
+def test_comment_list(login_header, client, session):
+    create_review(login_header, client)
+    create_comment(login_header, client, session)
+    create_comment(login_header, client, session)
+
+    response = client.get("/api/comment/list/1")
+    data = response.json()
+
+    assert response.status_code == 200
+    assert data.get("total") == 2
+    assert data.get("comment_list")[0].get("content") == "comment"
+
+
 def test_comment_delete(login_header, client, session):
     create_review(login_header, client)
     create_comment(login_header, client, session)

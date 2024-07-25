@@ -25,6 +25,11 @@ class Comment(BaseModel):
     dislike_accounts: Optional[List[Account]]
 
 
+class CommentList(BaseModel):
+    total: int = 0
+    comment_list: List[Comment]
+
+
 class CommentUpdate(CommentCreate):
     comment_id: int
 

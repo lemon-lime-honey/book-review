@@ -10,9 +10,10 @@ from models import Account
 router = APIRouter(prefix="/api/review")
 
 
-@router.get("/list", response_model=List[schemas.Review])
-def review_list(db: so.Session = Depends(get_db)):
-    return crud.get_review_list(db)
+@router.get("/list", response_model=schemas.ReviewList)
+def review_list(db: so.Session = Depends(get_db), page: int = 0, size: int = 12):
+    total, _review_list = crud.get_review_list(db, skip=page * size, limit=size)
+    return {"total": total, "review_list": _review_list}
 
 
 @router.get("/detail/{review_id}", response_model=schemas.Review)
