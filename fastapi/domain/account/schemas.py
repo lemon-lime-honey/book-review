@@ -2,6 +2,7 @@ from datetime import datetime, date
 from typing import List, Optional
 from pydantic import BaseModel, field_validator, EmailStr
 from pydantic_core.core_schema import ValidationInfo
+from error_msg import FormErrorMessage
 
 
 class AccountCreate(BaseModel):
@@ -15,13 +16,13 @@ class AccountCreate(BaseModel):
     @field_validator("username", "password1", "password2", "email")
     def not_empty(cls, v):
         if not v or not v.strip():
-            raise ValueError("필수항목입니다.")
+            raise ValueError(FormErrorMessage.REQUIRED.value)
         return v
 
     @field_validator("password2")
     def passwords_match(cls, v, info: ValidationInfo):
         if "password1" in info.data and v != info.data.get("password1"):
-            raise ValueError("비밀번호가 일치하지 않습니다.")
+            raise ValueError(FormErrorMessage.PASSWORD_CONFLICT.value)
         return v
 
 

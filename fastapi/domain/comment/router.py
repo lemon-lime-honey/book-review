@@ -6,6 +6,7 @@ from domain.comment import schemas
 from domain.comment import crud as c_crud
 from domain.review import crud as r_crud
 from database import get_db
+from error_msg import ReviewErrorMessage, CommentErrorMessage, ETCErrorMessage
 from models import Account
 
 router = APIRouter(prefix="/api/comment")
@@ -21,7 +22,8 @@ def comment_create(
     review = r_crud.get_review(db, review_id)
     if review is None:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="후기가 존재하지 않습니다."
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=ReviewErrorMessage.REVIEW_NOT_FOUND.value,
         )
     c_crud.create_comment(db, _comment_create, review, current_user)
 
@@ -34,7 +36,8 @@ def comment_update(
     comment = c_crud.get_comment(db, _comment_create.comment_id)
     if comment is None:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="댓글이 존재하지 않습니다."
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=CommentErrorMessage.COMMENT_NOT_FOUND.value,
         )
     c_crud.update_comment(db, _comment_create, comment)
 
@@ -63,11 +66,13 @@ def comment_delete(
     comment = c_crud.get_comment(db, _comment_delete.comment_id)
     if comment is None:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="댓글이 존재하지 않습니다."
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=CommentErrorMessage.COMMENT_NOT_FOUND.value,
         )
     if current_user.id != comment.author.id:
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN, detail="삭제 권한이 없습니다."
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=ETCErrorMessage.AUTHOR_CONFLICT_DELETE.value,
         )
     c_crud.delete_comment(db, comment)
 
@@ -81,12 +86,13 @@ def comment_like(
     comment = c_crud.get_comment(db, _comment_like.comment_id)
     if comment is None:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="댓글이 존재하지 않습니다."
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=CommentErrorMessage.COMMENT_NOT_FOUND.value,
         )
     if current_user in comment.dislike_accounts:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="싫어요를 누른 댓글에 좋아요를 누를 수는 없습니다.",
+            detail=CommentErrorMessage.COMMENT_CANNOT_LIKE.value,
         )
     c_crud.like_comment(db, comment, current_user)
 
@@ -100,11 +106,12 @@ def comment_dislike(
     comment = c_crud.get_comment(db, _comment_dislike.comment_id)
     if comment is None:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="댓글이 존재하지 않습니다."
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=CommentErrorMessage.COMMENT_NOT_FOUND.value,
         )
     if current_user in comment.like_accounts:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="싫어요를 누른 댓글에 좋아요를 누를 수는 없습니다.",
+            detail=CommentErrorMessage.COMMENT_CANNOT_DISLIKE.value,
         )
     c_crud.dislike_comment(db, comment, current_user)

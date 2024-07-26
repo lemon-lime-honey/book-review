@@ -5,6 +5,7 @@ from starlette import status
 from domain.account.router import load_current_account
 from domain.review import schemas, crud
 from database import get_db
+from error_msg import ReviewErrorMessage, ETCErrorMessage
 from models import Account
 
 router = APIRouter(prefix="/api/review")
@@ -21,7 +22,8 @@ def review_detail(review_id: int, db: so.Session = Depends(get_db)):
     review = crud.get_review(db, review_id)
     if review is None:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="후기가 존재하지 않습니다."
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=ReviewErrorMessage.REVIEW_NOT_FOUND.value,
         )
     return review
 
@@ -37,24 +39,40 @@ def review_create(
 
 @router.put("/update/{review_id}", status_code=status.HTTP_204_NO_CONTENT)
 def review_update(
-    _review_update: schemas.ReviewUpdate, db: so.Session = Depends(get_db)
+    _review_update: schemas.ReviewUpdate,
+    db: so.Session = Depends(get_db),
+    current_user: Account = Depends(load_current_account),
 ):
     review = crud.get_review(db, _review_update.review_id)
     if review is None:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="후기가 존재하지 않습니다."
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=ReviewErrorMessage.REVIEW_NOT_FOUND.value,
+        )
+    if review.author != current_user:
+        raise HTTPException(
+            status_code=status.HTTP_403,
+            detail=ETCErrorMessage.AUTHOR_CONFLICT_UPDATE.value,
         )
     crud.update_review(db, _review_update, review)
 
 
 @router.delete("/delete", status_code=status.HTTP_204_NO_CONTENT)
 def review_delete(
-    _review_delete: schemas.ReviewDelete, db: so.Session = Depends(get_db)
+    _review_delete: schemas.ReviewDelete,
+    db: so.Session = Depends(get_db),
+    current_user: Account = Depends(load_current_account),
 ):
     review = crud.get_review(db, _review_delete.review_id)
     if review is None:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="후기가 존재하지 않습니다."
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=ReviewErrorMessage.REVIEW_NOT_FOUND.value,
+        )
+    if review.author != current_user:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=ETCErrorMessage.AUTHOR_CONFLICT_DELETE.value,
         )
     crud.delete_review(db, review)
 
@@ -68,12 +86,13 @@ def review_like(
     review = crud.get_review(db, _review_like.review_id)
     if review is None:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="후기가 존재하지 않습니다."
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=ReviewErrorMessage.REVIEW_NOT_FOUND.value,
         )
     if current_user in review.dislike_accounts:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="싫어요를 누른 후기에 좋아요를 누를 수는 없습니다.",
+            detail=ReviewErrorMessage.REVIEW_CANNOT_LIKE.value,
         )
     crud.like_review(db, review, current_user)
 
@@ -87,11 +106,12 @@ def review_dislike(
     review = crud.get_review(db, _review_dislike.review_id)
     if review is None:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="후기가 존재하지 않습니다."
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=ReviewErrorMessage.REVIEW_NOT_FOUND.value,
         )
     if current_user in review.like_accounts:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="좋아요를 누른 후기에 싫어요를 누를 수는 없습니다.",
+            detail=ReviewErrorMessage.REVIEW_CANNOT_DISLIKE.value,
         )
     crud.dislike_review(db, review, current_user)

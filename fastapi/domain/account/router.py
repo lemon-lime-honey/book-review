@@ -8,6 +8,7 @@ from jose import jwt, JWTError
 from starlette import status
 from domain.account import schemas, crud
 from database import get_db
+from error_msg import AccountErrorMessage
 from models import Account
 
 load_dotenv()
@@ -27,7 +28,7 @@ def load_current_account(
 ):
     credential_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
+        detail=AccountErrorMessage.ACCOUNT_CANNOT_VALIDATE.value,
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
@@ -50,7 +51,8 @@ def account_create(
 ):
     if crud.check_account(db, _account_create):
         raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT, detail="이미 존재하는 회원입니다."
+            status_code=status.HTTP_409_CONFLICT,
+            detail=AccountErrorMessage.ACCOUNT_EXISTS.value,
         )
     crud.create_account(db, _account_create)
 
@@ -68,7 +70,7 @@ def login(
     if not account or not crud.pwd_context.verify(form_data.password, account.password):
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail="아이디 또는 비밀번호가 다릅니다.",
+            detail=AccountErrorMessage.ACCOUNT_DIFFERENT_DATA.value,
             headers={"WWW-Authenticate": "Bearer"},
         )
     claims = {
@@ -94,11 +96,13 @@ def account_update(
     account = db.get(Account, _account_update.id)
     if not account:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="계정을 찾을 수 없습니다."
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=AccountErrorMessage.ACCOUNT_NOT_FOUND.value,
         )
     if account.id != current_user.id:
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN, detail="다른 계정입니다."
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=AccountErrorMessage.ACCOUNT_DIFFERENT_ACCOUNT.value,
         )
     crud.update_account(db, _account_update, account)
 
@@ -112,6 +116,7 @@ def follow(
     account = db.get(Account, _follow.account_id)
     if not account:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="존재하지 않는 회원입니다."
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=AccountErrorMessage.ACCOUNT_NOT_FOUND.value,
         )
     crud.follow(db, account, current_user)

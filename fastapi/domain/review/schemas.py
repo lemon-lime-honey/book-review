@@ -3,6 +3,7 @@ from typing import List, Optional
 from pydantic import BaseModel, field_validator
 from domain.account.schemas import Account
 from domain.comment.schemas import Comment
+from error_msg import FormErrorMessage
 
 
 class ReviewCreate(BaseModel):
@@ -13,7 +14,7 @@ class ReviewCreate(BaseModel):
     @field_validator("book", "subject", "content")
     def not_empty(cls, v):
         if not v or not v.strip():
-            raise ValueError("빈 칸은 허용되지 않습니다.")
+            raise ValueError(FormErrorMessage.REQUIRED.value)
         return v
 
 
