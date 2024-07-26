@@ -1,6 +1,5 @@
 # TODO
 
-- [ ] 메시지 열거형
 - [ ] 오류 발생 시 화면 수정
 - [ ] 프론트 다듬기
 
@@ -72,4 +71,10 @@
 <summary>240725</summary>
 
 - [X] 후기, 댓글 페이지네이션 적용
+</details>
+
+<details>
+<summary>240726</summary>
+
+- [X] 메시지 열거형
 </details>
