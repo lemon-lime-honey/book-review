@@ -8,6 +8,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 from database import Base, get_db
 from main import app
+from models import Review
 
 SQLALCHEMY_DATABASE_URL = "sqlite://"
 
@@ -115,14 +116,38 @@ def create_two_accounts(client):
 
 
 @pytest.fixture
-def login_header_second(client, create_two_accounts):
-    res = json.loads(
-        client.post(
+def login_header_first(client, create_two_accounts):
+    res = client.post(
             "/api/account/login", data={"username": "test", "password": "test"}
-        ).text
-    )
+        ).json()
+
     headers = {
         "Authorization": f"Bearer {res['access_token']}",
         "user_id": f"{res["user_id"]}",
     }
+
     return headers
+
+
+@pytest.fixture
+def login_header_second(client, create_two_accounts):
+    res = client.post(
+        "/api/account/login", data={"username": "test2", "password": "test2"}
+    ).json()
+
+    headers = {
+        "Authorization": f"Bearer {res['access_token']}",
+        "user_id": f"{res["user_id"]}"
+    }
+
+    return headers
+
+
+@pytest.fixture
+def review_comment_like_follow(client, session, create_two_accounts, login_header_first, login_header_second):
+    client.post("/api/review/create", json={"subject": "title1", "book": "book1", "content": "content1"}, headers=login_header_first)
+    client.post("/api/review/like", json={"review_id": 1}, headers=login_header_second)
+    client.post("/api/comment/create/1", json={"content": "comment1", "review": jsonable_encoder(session.get(Review, 1))}, headers=login_header_first)
+    client.post("/api/comment/like", json={"comment_id": 1}, headers=login_header_second)
+    client.post("/api/")
+    client.post("/api/account/follow", json={"account_id": 1}, headers=login_header_second)

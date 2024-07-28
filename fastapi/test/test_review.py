@@ -107,6 +107,18 @@ def test_review_delete(login_header, client):
     assert response.status_code == 404
 
 
+def test_review_delete_cascade(review_comment_like_follow, login_header_first, client):
+    response = client.delete_with_payload(
+        url="/api/review/delete", headers=login_header_first, json={"review_id": 1}
+    )
+
+    assert response.status_code == 204
+
+    response = client.get("/api/review/detail/1")
+
+    assert response.status_code == 404
+
+
 def test_review_like(login_header, client, session):
     create_review(login_header, client)
 

@@ -105,6 +105,20 @@ def test_comment_delete(login_header, client, session):
     assert comment is None
 
 
+def test_comment_delete_after_like(
+    login_header_first, review_comment_like_follow, client, session
+):
+    response = client.delete_with_payload(
+        url="/api/comment/delete", json={"comment_id": 1}, headers=login_header_first
+    )
+
+    assert response.status_code == 204
+
+    comment = session.get(Comment, 1)
+
+    assert comment is None
+
+
 def test_comment_like(login_header, client, session):
     create_review(login_header, client)
     create_comment(login_header, client, session)
