@@ -134,14 +134,14 @@
     if (!$is_login) return;
 
     for (let i = 0; i < review.like_accounts.length; i++) {
-      if (review.like_accounts[i].username == $user_id) {
+      if (review.like_accounts[i].id == $user_id) {
         review_flag = 1;
         return;
       }
     }
 
     for (let i = 0; i < review.dislike_accounts.length; i++) {
-      if (review.dislike_accounts[i].username == $user_id) {
+      if (review.dislike_accounts[i].id == $user_id) {
         review_flag = 2;
         return;
       }
@@ -158,7 +158,7 @@
 
     if (typeof comment !== 'undefined') {
       for (let i = 0; i < comment.like_accounts.length; i++) {
-        if (comment.like_accounts[i].username == $user_id) {
+        if (comment.like_accounts[i].id == $user_id) {
           return 1;
         }
       }
@@ -166,7 +166,7 @@
 
     if (typeof comment !== 'undefined') {
       for (let i = 0; i < comment.dislike_accounts.length; i++) {
-        if (comment.dislike_accounts[i].username == $user_id) {
+        if (comment.dislike_accounts[i].id == $user_id) {
           return 2;
         }
       }
@@ -182,7 +182,7 @@
       <div class="position-relative">
         <h3 class="card-title">{review.subject}</h3>
         <div class="position-absolute top-0 end-0">
-          {#if review.author.username == $user_id}
+          {#if review.author.id == $user_id}
             <a use:link href="/review-update/{review.id}" class="btn p-0">
               <Icon icon="material-symbols:edit" />
             </a>
@@ -218,7 +218,7 @@
         <button
           class="btn border-0"
           on:click="{() => like_review()}"
-          disabled="{review_flag === 2 || !$is_login || $user_id == review.author.username ? true : false}"
+          disabled="{review_flag === 2 || !$is_login || $user_id == review.author.id ? true : false}"
         >
           <span>{review.like_accounts.length}</span>
           <Icon icon="{review_flag === 1 ? 'material-symbols:thumb-up' : 'material-symbols:thumb-up-outline'}" />
@@ -226,7 +226,7 @@
         <button
           class="btn border-0"
           on:click="{() => dislike_review()}"
-          disabled="{review_flag === 1 || !$is_login || $user_id == review.author.username ? true : false}"
+          disabled="{review_flag === 1 || !$is_login || $user_id == review.author.id ? true : false}"
         >
           <Icon icon="{review_flag === 2 ? 'material-symbols:thumb-down' : 'material-symbols:thumb-down-outline'}" />
           <span>{review.dislike_accounts.length}</span>
@@ -277,9 +277,7 @@
                       <button
                         class="btn btn-sm border-0"
                         on:click="{() => like_comment(comment.id)}"
-                        disabled="{comment_flag[i] === 2 || !$is_login || $user_id == comment.author.username
-                          ? true
-                          : false}"
+                        disabled="{comment_flag[i] === 2 || !$is_login || $user_id == comment.author.id ? true : false}"
                       >
                         <Icon
                           icon="{comment_flag[i] === 1
@@ -295,9 +293,7 @@
                       <button
                         class="btn btn-sm border-0"
                         on:click="{() => dislike_comment(comment.id)}"
-                        disabled="{comment_flag[i] === 1 || !$is_login || $user_id == comment.author.username
-                          ? true
-                          : false}"
+                        disabled="{comment_flag[i] === 1 || !$is_login || $user_id == comment.author.id ? true : false}"
                       >
                         <Icon
                           icon="{comment_flag[i] === 2
@@ -311,7 +307,7 @@
                     </div>
                   </div>
                   <span class="position-absolute top-0 end-0 d-flex">
-                    {#if comment.author.username == $user_id}
+                    {#if comment.author.id == $user_id}
                       <a use:link href="/comment-update/{comment.id}" class="btn btn-sm p-0">
                         <Icon icon="material-symbols:edit" width="0.7rem" height="0.7rem" />
                       </a>
