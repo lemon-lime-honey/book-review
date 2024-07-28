@@ -23,14 +23,23 @@
       review_list = review_list.concat(json.review_list);
       page = _page;
       total = json.total;
-      console.log(review_list);
+      hideSpinner();
     });
   }
 
   get_review_list(0);
+
+  function hideSpinner() {
+    document.getElementById('spinner').style.display = 'none';
+  }
 </script>
 
 <div class="container">
+  <div class="d-flex justify-content-center mt-5" style="height: 100%;">
+    <div class="spinner-border" role="status" id="spinner">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
   <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4">
     {#if review_list}
       {#each review_list as review}
