@@ -78,3 +78,13 @@
 
 - [X] 메시지 열거형
 </details>
+
+<details>
+<summary>240728</summary>
+
+- [X] Cascade 설정
+- [X] 계정 삭제 기능 추가
+- [X] 테스트 작성
+- [X] 후기 상세 페이지 오류 수정
+- [X] 메인 페이지에 로딩 스피너 추가
+</details>
