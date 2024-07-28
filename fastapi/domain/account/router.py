@@ -107,6 +107,14 @@ def account_update(
     crud.update_account(db, _account_update, account)
 
 
+@router.delete("/delete", status_code=status.HTTP_204_NO_CONTENT)
+def account_delete(
+    db: so.Session = Depends(get_db),
+    current_user: Account = Depends(load_current_account),
+):
+    crud.delete_account(db, current_user)
+
+
 @router.post("/follow", status_code=status.HTTP_204_NO_CONTENT)
 def follow(
     _follow: schemas.Follow,

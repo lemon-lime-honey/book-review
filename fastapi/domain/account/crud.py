@@ -14,7 +14,7 @@ def create_account(db: so.Session, account_create: schemas.AccountCreate):
         email=account_create.email,
         birthday=account_create.birthday,
         summary=account_create.summary,
-        created_at=datetime.now(UTC)
+        created_at=datetime.now(UTC),
     )
     db.add(account)
     db.commit()
@@ -39,13 +39,20 @@ def find_account(db: so.Session, username: str):
     return db.query(Account).filter(Account.username == username).first()
 
 
-def update_account(db: so.Session, account_update: schemas.AccountUpdate, account: Account):
+def update_account(
+    db: so.Session, account_update: schemas.AccountUpdate, account: Account
+):
     account.username = account_update.username
     account.email = account_update.email
     account.birthday = account_update.birthday
     account.summary = account_update.summary
 
     db.add(account)
+    db.commit()
+
+
+def delete_account(db: so.Session, account: Account):
+    db.delete(account)
     db.commit()
 
 
