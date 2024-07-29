@@ -1,16 +1,27 @@
+import bcrypt
 import sqlalchemy.orm as so
 from datetime import datetime, UTC
-from passlib.context import CryptContext
 from domain.account import schemas
 from models import Account
 
-pwd_context = CryptContext(schemes=["bcrypt"])
+
+def hash_password(password: str):
+    pwd_bytes = password.encode("utf-8")
+    salt = bcrypt.gensalt()
+    hashed_password = bcrypt.hashpw(password=pwd_bytes, salt=salt)
+    return hashed_password.decode("utf-8")
+
+
+def verify_password(pw_ipt, pw_hash):
+    pwd_bytes = pw_ipt.encode("utf-8")
+    pw_hash_bytes = pw_hash.encode("utf-8")
+    return bcrypt.checkpw(password=pwd_bytes, hashed_password=pw_hash_bytes)
 
 
 def create_account(db: so.Session, account_create: schemas.AccountCreate):
     account = Account(
         username=account_create.username,
-        password=pwd_context.hash(account_create.password1),
+        password=hash_password(account_create.password1),
         email=account_create.email,
         birthday=account_create.birthday,
         summary=account_create.summary,

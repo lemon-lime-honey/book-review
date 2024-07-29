@@ -1,8 +1,8 @@
 """reset migrations
 
-Revision ID: 6f6629bb49f2
+Revision ID: 5b1b0ed8c433
 Revises: 
-Create Date: 2024-07-25 21:46:43.551935
+Create Date: 2024-07-29 21:18:34.427199
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '6f6629bb49f2'
+revision: str = '5b1b0ed8c433'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -36,8 +36,8 @@ def upgrade() -> None:
     op.create_table('follow_table',
     sa.Column('follower_id', sa.Integer(), nullable=False),
     sa.Column('followed_id', sa.Integer(), nullable=False),
-    sa.ForeignKeyConstraint(['followed_id'], ['account.id'], ),
-    sa.ForeignKeyConstraint(['follower_id'], ['account.id'], ),
+    sa.ForeignKeyConstraint(['followed_id'], ['account.id'], name='follow_table_followed_id_fkey', ondelete='CASCADE'),
+    sa.ForeignKeyConstraint(['follower_id'], ['account.id'], name='follow_table_follower_id_fkey', ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('follower_id', 'followed_id')
     )
     op.create_table('review',
@@ -48,7 +48,7 @@ def upgrade() -> None:
     sa.Column('created_at', sa.DateTime(), nullable=False),
     sa.Column('updated_at', sa.DateTime(), nullable=True),
     sa.Column('author_id', sa.Integer(), nullable=False),
-    sa.ForeignKeyConstraint(['author_id'], ['account.id'], ),
+    sa.ForeignKeyConstraint(['author_id'], ['account.id'], name='review_author_id_fkey', ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('comment',
@@ -58,36 +58,36 @@ def upgrade() -> None:
     sa.Column('updated_at', sa.DateTime(), nullable=True),
     sa.Column('review_id', sa.Integer(), nullable=False),
     sa.Column('author_id', sa.Integer(), nullable=False),
-    sa.ForeignKeyConstraint(['author_id'], ['account.id'], ),
-    sa.ForeignKeyConstraint(['review_id'], ['review.id'], ),
+    sa.ForeignKeyConstraint(['author_id'], ['account.id'], name='comment_author_id_fkey', ondelete='CASCADE'),
+    sa.ForeignKeyConstraint(['review_id'], ['review.id'], name='comment_review_id_fkey', ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('dislike_review_table',
     sa.Column('dislike_review_account', sa.Integer(), nullable=False),
     sa.Column('dislike_review', sa.Integer(), nullable=False),
-    sa.ForeignKeyConstraint(['dislike_review'], ['review.id'], ),
-    sa.ForeignKeyConstraint(['dislike_review_account'], ['account.id'], ),
+    sa.ForeignKeyConstraint(['dislike_review'], ['review.id'], name='dislike_review_table_dislike_review_fkey', ondelete='CASCADE'),
+    sa.ForeignKeyConstraint(['dislike_review_account'], ['account.id'], name='dislike_review_table_dislike_review_account_fkey', ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('dislike_review_account', 'dislike_review')
     )
     op.create_table('like_review_table',
     sa.Column('like_review_account', sa.Integer(), nullable=False),
     sa.Column('like_review', sa.Integer(), nullable=False),
-    sa.ForeignKeyConstraint(['like_review'], ['review.id'], ),
-    sa.ForeignKeyConstraint(['like_review_account'], ['account.id'], ),
+    sa.ForeignKeyConstraint(['like_review'], ['review.id'], name='like_review_table_like_review_fkey', ondelete='CASCADE'),
+    sa.ForeignKeyConstraint(['like_review_account'], ['account.id'], name='like_review_table_like_review_account_fkey', ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('like_review_account', 'like_review')
     )
     op.create_table('dislike_comment_table',
     sa.Column('dislike_comment_account', sa.Integer(), nullable=False),
     sa.Column('dislike_comment', sa.Integer(), nullable=False),
-    sa.ForeignKeyConstraint(['dislike_comment'], ['comment.id'], ),
-    sa.ForeignKeyConstraint(['dislike_comment_account'], ['account.id'], ),
+    sa.ForeignKeyConstraint(['dislike_comment'], ['comment.id'], name='dislike_comment_fkey', ondelete='CASCADE'),
+    sa.ForeignKeyConstraint(['dislike_comment_account'], ['account.id'], name='dislike_comment_account_fkey', ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('dislike_comment_account', 'dislike_comment')
     )
     op.create_table('like_comment_table',
     sa.Column('like_comment_account', sa.Integer(), nullable=False),
     sa.Column('like_comment', sa.Integer(), nullable=False),
-    sa.ForeignKeyConstraint(['like_comment'], ['comment.id'], ),
-    sa.ForeignKeyConstraint(['like_comment_account'], ['account.id'], ),
+    sa.ForeignKeyConstraint(['like_comment'], ['comment.id'], name='like_comment_table_like_comment_fkey', ondelete='CASCADE'),
+    sa.ForeignKeyConstraint(['like_comment_account'], ['account.id'], name='like_comment_table_like_comment_account_fkey', ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('like_comment_account', 'like_comment')
     )
     # ### end Alembic commands ###

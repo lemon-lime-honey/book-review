@@ -10,11 +10,19 @@ like_review_table = sa.Table(
     Base.metadata,
     sa.Column(
         "like_review_account",
-        sa.ForeignKey("account.id", ondelete="CASCADE"),
+        sa.ForeignKey(
+            "account.id",
+            name="like_review_table_like_review_account_fkey",
+            ondelete="CASCADE",
+        ),
         primary_key=True,
     ),
     sa.Column(
-        "like_review", sa.ForeignKey("review.id", ondelete="CASCADE"), primary_key=True
+        "like_review",
+        sa.ForeignKey(
+            "review.id", name="like_review_table_like_review_fkey", ondelete="CASCADE"
+        ),
+        primary_key=True,
     ),
 )
 
@@ -23,12 +31,20 @@ dislike_review_table = sa.Table(
     Base.metadata,
     sa.Column(
         "dislike_review_account",
-        sa.ForeignKey("account.id", ondelete="CASCADE"),
+        sa.ForeignKey(
+            "account.id",
+            name="dislike_review_table_dislike_review_account_fkey",
+            ondelete="CASCADE",
+        ),
         primary_key=True,
     ),
     sa.Column(
         "dislike_review",
-        sa.ForeignKey("review.id", ondelete="CASCADE"),
+        sa.ForeignKey(
+            "review.id",
+            name="dislike_review_table_dislike_review_fkey",
+            ondelete="CASCADE",
+        ),
         primary_key=True,
     ),
 )
@@ -38,12 +54,20 @@ like_comment_table = sa.Table(
     Base.metadata,
     sa.Column(
         "like_comment_account",
-        sa.ForeignKey("account.id", ondelete="CASCADE"),
+        sa.ForeignKey(
+            "account.id",
+            name="like_comment_table_like_comment_account_fkey",
+            ondelete="CASCADE",
+        ),
         primary_key=True,
     ),
     sa.Column(
         "like_comment",
-        sa.ForeignKey("comment.id", ondelete="CASCADE"),
+        sa.ForeignKey(
+            "comment.id",
+            name="like_comment_table_like_comment_fkey",
+            ondelete="CASCADE",
+        ),
         primary_key=True,
     ),
 )
@@ -53,12 +77,14 @@ dislike_comment_table = sa.Table(
     Base.metadata,
     sa.Column(
         "dislike_comment_account",
-        sa.ForeignKey("account.id", ondelete="CASCADE"),
+        sa.ForeignKey(
+            "account.id", name="dislike_comment_account_fkey", ondelete="CASCADE"
+        ),
         primary_key=True,
     ),
     sa.Column(
         "dislike_comment",
-        sa.ForeignKey("comment.id", ondelete="CASCADE"),
+        sa.ForeignKey("comment.id", name="dislike_comment_fkey", ondelete="CASCADE"),
         primary_key=True,
     ),
 )
@@ -69,13 +95,17 @@ follow_table = sa.Table(
     sa.Column(
         "follower_id",
         sa.Integer,
-        sa.ForeignKey("account.id", ondelete="CASCADE"),
+        sa.ForeignKey(
+            "account.id", name="follow_table_follower_id_fkey", ondelete="CASCADE"
+        ),
         primary_key=True,
     ),
     sa.Column(
         "followed_id",
         sa.Integer,
-        sa.ForeignKey("account.id", ondelete="CASCADE"),
+        sa.ForeignKey(
+            "account.id", name="follow_table_followed_id_fkey", ondelete="CASCADE"
+        ),
         primary_key=True,
     ),
 )
@@ -142,7 +172,8 @@ class Review(Base):
     )
 
     author_id: so.Mapped[int] = so.mapped_column(
-        sa.ForeignKey("account.id", ondelete="CASCADE"), nullable=False
+        sa.ForeignKey("account.id", name="review_author_id_fkey", ondelete="CASCADE"),
+        nullable=False,
     )
     author: so.Mapped["Account"] = so.relationship(back_populates="reviews")
     comments: so.Mapped[List["Comment"]] = so.relationship(
@@ -165,11 +196,13 @@ class Comment(Base):
     updated_at: so.Mapped[datetime] = so.mapped_column(sa.DateTime, nullable=True)
 
     review_id: so.Mapped[int] = so.mapped_column(
-        sa.ForeignKey("review.id", ondelete="CASCADE"), nullable=False
+        sa.ForeignKey("review.id", name="comment_review_id_fkey", ondelete="CASCADE"),
+        nullable=False,
     )
     review: so.Mapped["Review"] = so.relationship(back_populates="comments")
     author_id: so.Mapped[int] = so.mapped_column(
-        sa.ForeignKey("account.id", ondelete="CASCADE"), nullable=False
+        sa.ForeignKey("account.id", name="comment_author_id_fkey", ondelete="CASCADE"),
+        nullable=False,
     )
     author: so.Mapped["Account"] = so.relationship(back_populates="comments")
     like_accounts: so.Mapped[List["Account"]] = so.relationship(

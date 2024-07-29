@@ -67,7 +67,7 @@ def login(
     form_data: OAuth2PasswordRequestForm = Depends(), db: so.Session = Depends(get_db)
 ):
     account = crud.find_account(db, form_data.username)
-    if not account or not crud.pwd_context.verify(form_data.password, account.password):
+    if not account or not crud.verify_password(form_data.password, account.password):
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail=AccountErrorMessage.ACCOUNT_DIFFERENT_DATA.value,
