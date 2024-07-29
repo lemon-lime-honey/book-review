@@ -1,5 +1,6 @@
 from datetime import datetime, date, UTC
 from random import randint
+from domain.account.crud import hash_password
 from database import SessionLocal
 from models import Account, Review, Comment
 
@@ -9,7 +10,7 @@ accounts = list()
 for i in range(1, 101):
     account = Account(
         username=f"test{i}",
-        password=f"test{i}",
+        password=hash_password(f"test{i}"),
         email=f"test{i}@example.com",
         birthday=date.today(),
         summary=f"test{i}",
@@ -37,17 +38,6 @@ for i in range(1, 501):
         content=f"comment{i}",
         created_at=datetime.now(UTC),
         review_id=randint(1, 300),
-        author_id=randint(1, 100),
-    )
-    db.add(comment)
-
-db.commit()
-
-for i in range(501, 1001):
-    comment = Comment(
-        content=f"comment{i}",
-        created_at=datetime.now(UTC),
-        review_id=randint(280, 300),
         author_id=randint(1, 100),
     )
     db.add(comment)
