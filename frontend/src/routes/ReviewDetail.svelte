@@ -5,7 +5,7 @@
   import dayjs from 'dayjs';
   import 'dayjs/locale/ko';
   import relativeTime from 'dayjs/plugin/relativeTime';
-  import Icon, { _api } from '@iconify/svelte';
+  import Icon from '@iconify/svelte';
 
   dayjs.extend(relativeTime);
   dayjs.locale('ko');

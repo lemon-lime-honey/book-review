@@ -1,23 +1,68 @@
 <script>
+  import { link } from 'svelte-spa-router';
+  import relativeTime from 'dayjs/plugin/relativeTime';
   import fastapi from '../lib/api';
   import { user_id } from '../lib/store';
+  import dayjs from 'dayjs';
+  import 'dayjs/locale/ko';
+  import Icon from '@iconify/svelte';
 
   export let params = {};
+
+  dayjs.extend(relativeTime);
+  dayjs.locale('ko');
 
   let username = params.username;
   let account = { following: [], followers: [] };
   let reviews = [];
   let comments = [];
+  let review_size = 5;
+  let review_page = 0;
+  let review_total = 0;
+  let comment_size = 5;
+  let comment_page = 0;
+  let comment_total = 0;
   let is_following = false;
+
+  $: total_review_page = Math.ceil(review_total / review_size);
+  $: total_comment_page = Math.ceil(comment_total / comment_size);
 
   function get_profile() {
     fastapi('get', '/api/account/get/' + username, {}, (json) => {
       account = json;
       chk_follow();
+      get_reviews(0);
+      get_comments(0);
     });
   }
 
   get_profile();
+
+  function get_reviews(_review_page) {
+    fastapi(
+      'get',
+      '/api/account/reviews',
+      { account_id: account.id, page: _review_page, size: review_size },
+      (json) => {
+        reviews = json.review_list;
+        review_page = _review_page;
+        review_total = json.total;
+      }
+    );
+  }
+
+  function get_comments(_comment_page) {
+    fastapi(
+      'get',
+      '/api/account/comments',
+      { account_id: account.id, page: _comment_page, size: comment_size },
+      (json) => {
+        comments = json.comment_list;
+        comment_page = _comment_page;
+        comment_total = json.total;
+      }
+    );
+  }
 
   function chk_follow() {
     is_following = false;
@@ -102,17 +147,89 @@
           aria-labelledby="review-tab"
           tabindex="0"
         >
-          {#if account.reviews}
-            {#each account.reviews as review}
-              {review.subject}
+          {#if reviews}
+            {#each reviews as review}
+              <div class="card mx-1 my-2">
+                <div class="card-body">
+                  <a
+                    use:link
+                    href="/review-detail/{review.id}"
+                    class="text-reset link-underline link-underline-opacity-0"
+                  >
+                    <div class="card-title">{review.subject}</div>
+                    <div class="card-text text-truncate">{review.content}</div>
+                    <div class="d-flex justify-content-between">
+                      <div class="card-subtitle">{review.book}</div>
+                      <div class="card-subtitle">
+                        {review.updated_at
+                          ? dayjs(review.updated_at).format('YY.MM.DD')
+                          : dayjs(review.created_at).format('YY.MM.DD')}
+                      </div>
+                    </div>
+                  </a>
+                </div>
+              </div>
             {/each}
+            <ul class="pagination pagination-sm justify-content-center align-items-center">
+              <li class="page-item {review_page <= 0 && 'disabled'}">
+                <button class="page-link" on:click="{() => get_reviews(review_page - 1)}">
+                  <Icon icon="material-symbols:keyboard-double-arrow-left" />
+                </button>
+              </li>
+              {#each Array(total_review_page) as _, loop_page}
+                {#if loop_page >= review_page - 5 && loop_page <= review_page + 5}
+                  <li class="page-item {loop_page === review_page && 'active'}">
+                    <button on:click="{() => get_reviews(loop_page)}" class="page-link">{loop_page + 1}</button>
+                  </li>
+                {/if}
+              {/each}
+              <li class="page-item {review_page >= total_review_page - 1 && 'disabled'}">
+                <button on:click="{() => get_reviews(review_page + 1)}" class="page-link">
+                  <Icon icon="material-symbols:keyboard-double-arrow-right" />
+                </button>
+              </li>
+            </ul>
           {/if}
         </div>
         <div class="tab-pane fade" id="comment-tab-pane" role="tabpanel" aria-labelledby="comment-tab" tabindex="0">
-          {#if account.comments}
-            {#each account.comments as comment}
-              {comment.content}
+          {#if comments}
+            {#each comments as comment}
+              <div class="card mx-1 my-2">
+                <div class="card-body">
+                  <a
+                    use:link
+                    href="/review-detail/{comment.review_id}"
+                    class="text-reset link-underline link-underline-opacity-0"
+                  >
+                    <div class="card-text text-truncate">{comment.content}</div>
+                    <div class="card-subtitle text-end">
+                      {comment.updated_at
+                        ? dayjs(comment.updated_at).format('YY.MM.DD')
+                        : dayjs(comment.created_at).format('YY.MM.DD')}
+                    </div>
+                  </a>
+                </div>
+              </div>
             {/each}
+            <ul class="pagination pagination-sm justify-content-center align-items-center">
+              <li class="page-item {comment_page <= 0 && 'disabled'}">
+                <button class="page-link" on:click="{() => get_comments(comment_page - 1)}">
+                  <Icon icon="material-symbols:keyboard-double-arrow-left" />
+                </button>
+              </li>
+              {#each Array(total_comment_page) as _, loop_page}
+                {#if loop_page >= comment_page - 5 && loop_page <= comment_page + 5}
+                  <li class="page-item {loop_page === comment_page && 'active'}">
+                    <button on:click="{() => get_comments(loop_page)}" class="page-link">{loop_page + 1}</button>
+                  </li>
+                {/if}
+              {/each}
+              <li class="page-item {comment_page >= total_comment_page - 1 && 'disabled'}">
+                <button on:click="{() => get_comments(comment_page + 1)}" class="page-link">
+                  <Icon icon="material-symbols:keyboard-double-arrow-right" />
+                </button>
+              </li>
+            </ul>
           {/if}
         </div>
       </div>
