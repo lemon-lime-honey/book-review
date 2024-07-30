@@ -7,6 +7,8 @@ from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from jose import jwt, JWTError
 from starlette import status
 from domain.account import schemas, crud
+from domain.comment.schemas import CommentList
+from domain.review.schemas import ReviewList
 from database import get_db
 from error_msg import AccountErrorMessage
 from models import Account
@@ -128,3 +130,33 @@ def follow(
             detail=AccountErrorMessage.ACCOUNT_NOT_FOUND.value,
         )
     crud.follow(db, account, current_user)
+
+
+@router.get("/reviews", response_model=ReviewList)
+def review_list_by_account(
+    account_id: int, db: so.Session = Depends(get_db), page: int = 0, size: int = 5
+):
+    account = crud.get_account(db, account_id)
+    if account is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=AccountErrorMessage.ACCOUNT_NOT_FOUND.value,
+        )
+    total, _review_list = crud.get_reviews(db, account_id, skip=page * size, limit=size)
+    return {"total": total, "review_list": _review_list}
+
+
+@router.get("/comments", response_model=CommentList)
+def comment_list_by_account(
+    account_id: int, db: so.Session = Depends(get_db), page: int = 0, size: int = 5
+):
+    account = crud.get_account(db, account_id)
+    if account is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=AccountErrorMessage.ACCOUNT_NOT_FOUND.value,
+        )
+    total, _comment_list = crud.get_comments(
+        db, account_id, skip=page * size, limit=size
+    )
+    return {"total": total, "comment_list": _comment_list}

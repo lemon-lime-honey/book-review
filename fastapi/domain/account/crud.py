@@ -2,7 +2,7 @@ import bcrypt
 import sqlalchemy.orm as so
 from datetime import datetime, UTC
 from domain.account import schemas
-from models import Account
+from models import Account, Comment, Review
 
 
 def hash_password(password: str):
@@ -73,3 +73,21 @@ def follow(db: so.Session, account: Account, current_user: Account):
     else:
         account.followers.append(current_user)
     db.commit()
+
+
+def get_reviews(db: so.Session, account_id: int, skip: int = 0, limit: int = 5):
+    _review_list = (
+        db.query(Review).filter_by(author_id=account_id).order_by(Review.id.desc())
+    )
+    total = _review_list.count()
+    review_list = _review_list.offset(skip).limit(limit).all()
+    return total, review_list
+
+
+def get_comments(db: so.Session, account_id: int, skip: int = 0, limit: int = 5):
+    _comment_list = (
+        db.query(Comment).filter_by(author_id=account_id).order_by(Comment.id.desc())
+    )
+    total = _comment_list.count()
+    comment_list = _comment_list.offset(skip).limit(limit).all()
+    return total, comment_list
