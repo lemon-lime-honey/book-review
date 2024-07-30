@@ -1,5 +1,6 @@
 <script>
   import { push } from 'svelte-spa-router';
+  import Error from '../components/Error.svelte';
   import fastapi from '../lib/api';
 
   let username = '';
@@ -8,6 +9,7 @@
   let email = '';
   let birthday = null;
   let summary = '';
+  let error = { detail: [] };
 
   function post_account(event) {
     event.preventDefault();
@@ -22,9 +24,17 @@
       summary: summary,
     };
 
-    fastapi('post', url, params, (json) => {
-      push('/account-login');
-    });
+    fastapi(
+      'post',
+      url,
+      params,
+      (json) => {
+        push('/account-login');
+      },
+      (err_json) => {
+        error = err_json;
+      }
+    );
   }
 </script>
 
@@ -32,6 +42,7 @@
   <div class="card w-50">
     <div class="card-body">
       <h4 class="card-title mb-3 text-center">회원가입</h4>
+      <Error {error} />
       <form method="post">
         <div class="form-floating mb-2">
           <input type="text" class="form-control" id="username" placeholder="usename" bind:value="{username}" />

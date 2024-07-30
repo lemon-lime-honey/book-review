@@ -1,10 +1,12 @@
 <script>
   import { push } from 'svelte-spa-router';
+  import Error from '../components/Error.svelte';
   import fastapi from '../lib/api';
   import { access_token, user_id, is_login } from '../lib/store';
 
   let login_username = '';
   let login_password = '';
+  let error = { detail: [] };
 
   function login(event) {
     event.preventDefault();
@@ -15,13 +17,21 @@
       password: login_password,
     };
 
-    fastapi('login', url, params, (json) => {
-      console.log(json);
-      $access_token = json.access_token;
-      $user_id = json.user_id;
-      $is_login = true;
-      push('/');
-    });
+    fastapi(
+      'login',
+      url,
+      params,
+      (json) => {
+        error = { detail: [] };
+        $access_token = json.access_token;
+        $user_id = json.user_id;
+        $is_login = true;
+        push('/');
+      },
+      (err_json) => {
+        error = err_json;
+      }
+    );
   }
 </script>
 
@@ -29,6 +39,7 @@
   <div class="card">
     <div class="card-body">
       <h4 class="card-title text-center mb-3">로그인</h4>
+      <Error {error} />
       <form method="post">
         <div class="form-floating mb-2">
           <input type="text" class="form-control" id="username" placeholder="username" bind:value="{login_username}" />

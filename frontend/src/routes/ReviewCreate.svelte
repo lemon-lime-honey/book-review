@@ -1,10 +1,12 @@
 <script>
   import { push } from 'svelte-spa-router';
+  import Error from '../components/Error.svelte';
   import fastapi from '../lib/api';
 
   let subject = '';
   let book = '';
   let content = '';
+  let error = { detail: [] };
 
   function post_review(event) {
     event.preventDefault();
@@ -15,9 +17,17 @@
       content: content,
     };
 
-    fastapi('post', url, params, (json) => {
-      push('/');
-    });
+    fastapi(
+      'post',
+      url,
+      params,
+      (json) => {
+        push('/');
+      },
+      (err_json) => {
+        error = err_json;
+      }
+    );
   }
 </script>
 
@@ -25,6 +35,7 @@
   <div class="card w-50">
     <div class="card-body">
       <h4 class="card-title mb-3 text-center">후기 작성</h4>
+      <Error {error} />
       <form method="post">
         <div class="form-floating mb-2">
           <input type="text" class="form-control" id="subject" placeholder="subject" bind:value="{subject}" />

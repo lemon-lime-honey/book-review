@@ -238,7 +238,13 @@
       <form method="post" class="mb-3">
         <div class="d-flex justify-content-between">
           <input type="text" class="form-control me-1" bind:value="{content}" />
-          <input type="submit" class="btn btn-outline-primary btn-sm" on:click="{post_comment}" value="등록" />
+          <input
+            type="submit"
+            class="btn btn-outline-primary btn-sm"
+            on:click="{post_comment}"
+            value="등록"
+            disabled="{content == '' ? true : false}"
+          />
         </div>
       </form>
     {:else}

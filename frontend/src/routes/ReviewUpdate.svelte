@@ -1,5 +1,6 @@
 <script>
   import { push } from 'svelte-spa-router';
+  import Error from '../components/Error.svelte';
   import fastapi from '../lib/api';
 
   export let params = {};
@@ -8,6 +9,7 @@
   let subject = '';
   let book = '';
   let content = '';
+  let error = { detail: [] };
 
   fastapi('get', '/api/review/detail/' + review_id, {}, (json) => {
     subject = json.subject;
@@ -25,9 +27,17 @@
       content: content,
     };
 
-    fastapi('put', url, params, (json) => {
-      push('/review-detail/' + review_id);
-    });
+    fastapi(
+      'put',
+      url,
+      params,
+      (json) => {
+        push('/review-detail/' + review_id);
+      },
+      (err_json) => {
+        error = err_json;
+      }
+    );
   }
 </script>
 
@@ -35,6 +45,7 @@
   <div class="card w-50">
     <div class="card-body">
       <h4 class="card-title mb-3 text-center">후기 수정</h4>
+      <Error {error} />
       <form method="post">
         <div class="form-floating mb-2">
           <input type="text" class="form-control" id="subject" placeholder="subject" bind:value="{subject}" />
