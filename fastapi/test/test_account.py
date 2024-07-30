@@ -111,3 +111,19 @@ def test_follow(login_header_first, session, client):
     assert response.status_code == 204
     assert len(current_account.following) == 0
     assert len(target_account.followers) == 0
+
+
+def test_find_review_by_account(client, session, review_comment_like_follow):
+    response = client.get("/api/account/reviews", params={"account_id": 1})
+
+    assert response.status_code == 200
+    assert response.json().get('total') == 1
+    assert len(session.query(Review).all()) == 2
+
+
+def test_find_comment_by_account(client, session, review_comment_like_follow):
+    response = client.get("/api/account/comments", params={"account_id": 1})
+
+    assert response.status_code == 200
+    assert response.json().get('total') == 1
+    assert len(session.query(Comment).all()) == 2

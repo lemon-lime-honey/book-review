@@ -145,9 +145,15 @@ def login_header_second(client, create_two_accounts):
 
 @pytest.fixture
 def review_comment_like_follow(client, session, create_two_accounts, login_header_first, login_header_second):
+    # create two reviews
     client.post("/api/review/create", json={"subject": "title1", "book": "book1", "content": "content1"}, headers=login_header_first)
+    client.post("/api/review/create", json={"subject": "title2", "book": "book2", "content": "content2"}, headers=login_header_second)
+    # like: review
     client.post("/api/review/like", json={"review_id": 1}, headers=login_header_second)
+    # create two comments
     client.post("/api/comment/create/1", json={"content": "comment1", "review": jsonable_encoder(session.get(Review, 1))}, headers=login_header_first)
+    client.post("/api/comment/create/1", json={"content": "comment2", "review": jsonable_encoder(session.get(Review, 1))}, headers=login_header_second)
+    # like: comment
     client.post("/api/comment/like", json={"comment_id": 1}, headers=login_header_second)
-    client.post("/api/")
+    # follow
     client.post("/api/account/follow", json={"account_id": 1}, headers=login_header_second)
