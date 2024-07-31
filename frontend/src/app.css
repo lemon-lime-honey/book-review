@@ -1,0 +1,17 @@
+.page-item.active .page-link {
+  background-color: lightcyan;
+  border-color: lightcyan;
+  color: black;
+}
+
+#comment-tab, #review-tab {
+  background-color: lightcyan;
+  border-top-color: lightgray;
+  border-left-color: lightgray;
+  border-right-color: lightgray;
+  color: black;
+}
+
+#comment-tab.active, #review-tab.active {
+  background-color: white;
+}

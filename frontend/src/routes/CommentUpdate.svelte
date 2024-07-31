@@ -1,7 +1,7 @@
 <script>
   import Error from '../components/Error.svelte';
   import fastapi from '../lib/api';
-  import { push } from 'svelte-spa-router';
+  import { link, push } from 'svelte-spa-router';
 
   export let params = {};
   const comment_id = params.comment_id;
@@ -37,8 +37,8 @@
   }
 </script>
 
-<div class="container">
-  <div class="card w-50">
+<div class="container d-flex justify-content-center">
+  <div class="card w-75">
     <div class="card-body">
       <h4 class="card-title mb-3 text-center">댓글 수정</h4>
       <Error {error} />
@@ -48,7 +48,10 @@
           ></textarea>
           <label for="content">내용</label>
         </div>
-        <button class="btn btn-outline-success" on:click="{update_comment}">저장</button>
+        <div class="d-flex justify-content-end">
+          <a use:link href="/review-detail/{review_id}" class="btn btn-outline-warning me-2">뒤로</a>
+          <button class="btn btn-outline-success" on:click="{update_comment}">저장</button>
+        </div>
       </form>
     </div>
   </div>

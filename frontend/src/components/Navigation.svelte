@@ -10,36 +10,17 @@
   }
 </script>
 
-<nav class="navbar navbar-expand-lg bg-body-tertiary mb-4">
+<nav class="navbar bg-info-subtle mb-4">
   <div class="container-fluid">
-    <a href="/" class="navbar-brand">BOOK</a>
-    <button
-      class="navbar-toggler"
-      type="button"
-      data-bs-toggle="collapse"
-      data-bs-target="#navbar"
-      aria-controls="navbar"
-      aria-expanded="false"
-      aria-label="Toggle navigation"
-    >
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbar">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        {#if $is_login == true}
-          <li class="nav-item">
-            <a use:link href="/review-create" class="nav-link">후기 작성</a>
-          </li>
-          <li class="nav-item"><a use:link href="/account-login" class="nav-link" on:click="{logout}">로그아웃</a></li>
-        {:else}
-          <li class="nav-item">
-            <a use:link href="/account-create" class="nav-link">회원가입</a>
-          </li>
-          <li class="nav-item">
-            <a use:link href="/account-login" class="nav-link">로그인</a>
-          </li>
-        {/if}
-      </ul>
+    <a href="/" class="navbar-brand ms-3">BOOK</a>
+    <div class="me-3">
+      {#if $is_login == true}<a use:link href="/account-login" class="nav-link" on:click="{logout}">로그아웃</a>
+      {:else}
+        <div class="d-flex">
+          <a use:link href="/account-create" class="nav-link me-2">회원가입</a>
+          <a use:link href="/account-login" class="nav-link ms-2">로그인</a>
+        </div>
+      {/if}
     </div>
   </div>
 </nav>

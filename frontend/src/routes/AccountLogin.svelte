@@ -35,8 +35,8 @@
   }
 </script>
 
-<div class="container">
-  <div class="card">
+<div class="container d-flex justify-content-center">
+  <div class="card w-75">
     <div class="card-body">
       <h4 class="card-title text-center mb-3">로그인</h4>
       <Error {error} />

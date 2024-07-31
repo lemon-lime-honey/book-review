@@ -31,8 +31,8 @@
   }
 </script>
 
-<div class="container">
-  <div class="card w-50">
+<div class="container d-flex justify-content-center">
+  <div class="card w-75">
     <div class="card-body">
       <h4 class="card-title mb-3 text-center">후기 작성</h4>
       <Error {error} />
@@ -46,7 +46,7 @@
           <label for="book">책 제목</label>
         </div>
         <div class="form-floating mb-2">
-          <textarea class="form-control" placeholder="content" id="content" style="height: 100px" bind:value="{content}"
+          <textarea class="form-control" placeholder="content" id="content" style="height: 200px" bind:value="{content}"
           ></textarea>
           <label for="content">내용</label>
         </div>

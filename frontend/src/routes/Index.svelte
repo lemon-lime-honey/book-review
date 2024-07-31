@@ -50,18 +50,21 @@
               href="/review-detail/{review.id}"
               class="text-reset link-underline link-underline-opacity-0 position-relative"
             >
-              <h2 class="card-title text-truncate">{review.subject}</h2>
-              <h5 class="card-subtitle">{review.book}</h5>
-              <div class="d-flex justify-content-between align-items-center">
+              <div class="position-absolute top-0 end-0">
+                <Icon icon="material-symbols:mode-comment" />
+                <span>{review.comments.length}</span>
+                <Icon icon="material-symbols:thumb-up" />
+                <span>{review.like_accounts.length}</span>
+                <Icon icon="material-symbols:thumb-down" />
+                <span>{review.dislike_accounts.length}</span>
+              </div>
+              <h2 class="card-title text-truncate mt-4 pt-3">{review.subject}</h2>
+              <h5 class="card-subtitle text-truncate py-2">{review.book}</h5>
+              <div class="d-flex justify-content-between align-items-center pb-3">
                 <p class="card-text m-0 mt-2">
                   {dayjs(review.created_at).fromNow()}
                 </p>
                 <p class="card-text text-secondary">{review.author.username}</p>
-              </div>
-              <div class="position-absolute top-0 end-0">
-                <span>{review.like_accounts.length}</span>
-                <Icon icon="material-symbols:thumbs-up-down" />
-                <span>{review.dislike_accounts.length}</span>
               </div>
             </a>
           </div>

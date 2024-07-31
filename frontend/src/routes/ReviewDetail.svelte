@@ -177,37 +177,22 @@
 </script>
 
 <div class="container">
-  <div class="card border-light col-12 col-md-6 offset-md-3">
+  <div class="card border-light col-12 col-md-8 col-lg-6 offset-md-2 offset-lg-3">
     <div class="card-header bg-transparent p-4">
-      <div class="position-relative">
-        <h3 class="card-title">{review.subject}</h3>
-        <div class="position-absolute top-0 end-0">
-          {#if review.author.id == $user_id}
-            <a use:link href="/review-update/{review.id}" class="btn p-0">
-              <Icon icon="material-symbols:edit" />
-            </a>
-            <button class="btn p-0 ps-1" on:click="{() => delete_review(review.id)}">
-              <Icon icon="material-symbols:delete-outline" />
-            </button>
-          {/if}
-        </div>
-      </div>
-
-      <h5 class="card-subtitle">{review.book}</h5>
-      <div class="d-flex justify-content-between align-items-center mt-2">
-        <a
-          use:link
-          href="/account-profile/{review.author.username}"
-          class="mb-0 text-reset link-underline link-underline-opacity-0"
-        >
-          {review.author.username}
-        </a>
-        <p class="small mb-0">
-          {dayjs(review.created_at).format('YY.MM.DD hh:mm')} 작성 {#if review.updated_at}
-            | {dayjs(review.updated_at).format('YY.MM.DD hh:mm')} 수정
-          {/if}
-        </p>
-      </div>
+      <h3 class="card-title mb-3">{review.subject}</h3>
+      <h5 class="card-subtitle mb-2">{review.book}</h5>
+      <a
+        use:link
+        href="/account-profile/{review.author.username}"
+        class="fs-5 mb-0 text-reset link-underline link-underline-opacity-0"
+      >
+        {review.author.username}
+      </a>
+      <p class="small mb-0 text-end">
+        {dayjs(review.created_at).format('YY.MM.DD hh:mm')} 작성 {#if review.updated_at}
+          | {dayjs(review.updated_at).format('YY.MM.DD hh:mm')} 수정
+        {/if}
+      </p>
     </div>
     <div class="card-body p-4">
       <p class="card-text">{review.content}</p>
@@ -232,6 +217,12 @@
           <span>{review.dislike_accounts.length}</span>
         </button>
       </div>
+      <div>
+        {#if review.author.id == $user_id}
+          <a use:link href="/review-update/{review.id}" class="btn p-0"> 수정 </a>
+          <button class="btn p-0 ps-1" on:click="{() => delete_review(review.id)}"> 삭제 </button>
+        {/if}
+      </div>
     </div>
     <hr />
     {#if $is_login}
@@ -251,7 +242,7 @@
       <p class="text-center">비회원은 댓글을 작성할 수 없습니다</p>
     {/if}
     <div class="card-footer bg-transparent p-2">
-      {#if review.comments}
+      {#if comment_list.length !== 0}
         <table class="table table-borderless table-hover align-middle">
           <tbody>
             {#each comment_list as comment, i}
@@ -260,7 +251,7 @@
                   {comment.content}
                 </td>
                 <td class="align-middle flex position-relative">
-                  <div class="flex">
+                  <div class="flex my-3">
                     <div class="text-center">
                       <a
                         use:link
@@ -347,7 +338,7 @@
           </li>
         </ul>
       {:else}
-        <p>아직 댓글이 없어요</p>
+        <p class="mt-3 text-center">아직 댓글이 없어요</p>
       {/if}
     </div>
   </div>

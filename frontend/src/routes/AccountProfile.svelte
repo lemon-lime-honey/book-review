@@ -84,7 +84,7 @@
 </script>
 
 <div class="container">
-  <div class="card border-light col-12 col-md-6 offset-md-3">
+  <div class="card border-light col-12 col-md-8 col-lg-6 offset-md-2 offset-lg-3">
     <div class="card-header bg-transparent p-0">
       <div class="px-4 pt-4 d-flex justify-content-between align-items-center">
         <p class="h3">{account.username}</p>
@@ -111,6 +111,7 @@
         <span>팔로우 {account.followers.length}</span>
         <span>팔로잉 {account.following.length}</span>
       </div>
+      <p class="px-4 pb-3">{account.summary}</p>
     </div>
     <div class="card-body p-0">
       <ul class="nav nav-tabs pt-3" id="profile-tab" role="tablist">
