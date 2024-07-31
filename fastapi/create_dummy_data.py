@@ -36,10 +36,11 @@ account_idx = 0
 t = 1
 
 while t < 1001:
+    usrname = username[account_idx].rstrip()
     account = Account(
-        username=username[account_idx],
-        password=hash_password(username[account_idx]),
-        email=f"{username[account_idx]}@example.com",
+        username=usrname,
+        password=hash_password(usrname),
+        email=f"{usrname}@example.com",
         birthday=date.today() - timedelta(weeks=56 * 20),
         summary=summary[randint(0, len(summary) - 1)],
         created_at=basetime + timedelta(minutes=10 * t),
