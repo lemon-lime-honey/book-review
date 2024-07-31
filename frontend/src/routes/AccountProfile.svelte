@@ -178,7 +178,7 @@
                 </button>
               </li>
               {#each Array(total_review_page) as _, loop_page}
-                {#if loop_page >= review_page - 5 && loop_page <= review_page + 5}
+                {#if loop_page == 0 || loop_page == total_review_page - 1 || (loop_page > review_page - 2 && loop_page < review_page + 2) || (loop_page < 4 && review_page < 2) || (loop_page > total_review_page - 5 && review_page > total_review_page - 3)}
                   <li class="page-item {loop_page === review_page && 'active'}">
                     <button on:click="{() => get_reviews(loop_page)}" class="page-link">{loop_page + 1}</button>
                   </li>
@@ -219,7 +219,7 @@
                 </button>
               </li>
               {#each Array(total_comment_page) as _, loop_page}
-                {#if loop_page >= comment_page - 5 && loop_page <= comment_page + 5}
+                {#if loop_page == 0 || loop_page == total_comment_page - 1 || (loop_page > comment_page - 2 && loop_page < comment_page + 2) || (loop_page < 4 && comment_page < 2) || (loop_page > total_comment_page - 5 && comment_page > total_comment_page - 3)}
                   <li class="page-item {loop_page === comment_page && 'active'}">
                     <button on:click="{() => get_comments(loop_page)}" class="page-link">{loop_page + 1}</button>
                   </li>

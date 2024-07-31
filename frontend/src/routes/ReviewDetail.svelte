@@ -325,7 +325,7 @@
             </button>
           </li>
           {#each Array(total_page) as _, loop_page}
-            {#if loop_page >= page - 5 && loop_page <= page + 5}
+            {#if loop_page == 0 || loop_page == total_page - 1 || (loop_page > page - 2 && loop_page < page + 2) || (loop_page < 4 && page < 2) || (loop_page > total_page - 5 && page > total_page - 3)}
               <li class="page-item {loop_page === page && 'active'}">
                 <button on:click="{() => get_comment_list(loop_page)}" class="page-link">{loop_page + 1}</button>
               </li>
