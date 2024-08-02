@@ -109,8 +109,7 @@ def test_match_account(client, session, create_account):
 def test_reset_password(login_header, client, session):
     response = client.post(
         "/api/account/reset",
-        params={"account_id": 1},
-        json={"password1": "newPw", "password2": "newPw"},
+        json={"account_id": 1, "password1": "newPw", "password2": "newPw"},
         headers=login_header,
     )
 
@@ -123,7 +122,7 @@ def test_reset_password(login_header, client, session):
 def test_change_password(login_header, client, session):
     response = client.post(
         "api/account/change",
-        json={"password": "test", "password1": "newPw", "password2": "newPw"},
+        json={"account_id": 1, "password": "test", "password1": "newPw", "password2": "newPw"},
         headers=login_header,
     )
 
