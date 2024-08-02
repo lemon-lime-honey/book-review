@@ -1,7 +1,8 @@
 # TODO
 
-- [ ] book 테이블 생성
 - [ ] 비밀번호 재설정
+- [ ] README 작성
+- [ ] 링크 확인
 
 # DONE
 
@@ -110,4 +111,10 @@
 
 - [X] 프론트 다듬기
 - [X] 더미 데이터 생성 스크립트 수정
+</details>
+
+<details>
+<summary>240802</summary>
+
+- [X] 마크다운 지원
 </details>
