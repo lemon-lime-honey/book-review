@@ -1,8 +1,6 @@
 # TODO
 
-- [ ] 비밀번호 재설정
 - [ ] README 작성
-- [ ] 링크 확인
 
 # DONE
 
@@ -116,5 +114,7 @@
 <details>
 <summary>240802</summary>
 
+- [X] 비밀번호 재설정
 - [X] 마크다운 지원
+- [X] 링크 확인
 </details>
