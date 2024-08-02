@@ -118,6 +118,42 @@ def account_delete(
     crud.delete_account(db, current_user)
 
 
+@router.post("/match", response_model=schemas.AccountBase)
+def account_match(
+    _account_match: schemas.AccountMatch, db: so.Session = Depends(get_db)
+):
+    account = crud.match_account(db, _account_match.username, _account_match.email)
+    if account is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=AccountErrorMessage.ACCOUNT_NOT_FOUND.value,
+        )
+    return {"id": account.id}
+
+
+@router.post("/reset", status_code=status.HTTP_204_NO_CONTENT)
+def reset_password(
+    account_id: int, _reset_password: schemas.PasswordReset, db: so.Session = Depends(get_db)
+):
+    crud.change_password(db, account_id, _reset_password.password1)
+
+
+@router.post("/change", status_code=status.HTTP_204_NO_CONTENT)
+def change_password(
+    _change_password: schemas.PasswordChange,
+    db: so.Session = Depends(get_db),
+    current_user: Account = Depends(load_current_account),
+):
+    if not crud.verify_password(_change_password.password, current_user.password):
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=AccountErrorMessage.ACCOUNT_DIFFERENT_DATA.value,
+        )
+    current_user.password = crud.hash_password(_change_password.password1)
+    db.add(current_user)
+    db.commit()
+
+
 @router.post("/follow", status_code=status.HTTP_204_NO_CONTENT)
 def follow(
     _follow: schemas.Follow,

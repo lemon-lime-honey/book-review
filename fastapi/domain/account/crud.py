@@ -67,6 +67,18 @@ def delete_account(db: so.Session, account: Account):
     db.commit()
 
 
+def match_account(db: so.Session, username: str, email: str):
+    account = db.query(Account).filter_by(username=username, email=email).first()
+    return account
+
+
+def change_password(db: so.Session, account_id: int, password):
+    account = db.get(Account, account_id)
+    account.password = hash_password(password)
+    db.add(account)
+    db.commit()
+
+
 def follow(db: so.Session, account: Account, current_user: Account):
     if current_user in account.followers:
         account.followers.remove(current_user)

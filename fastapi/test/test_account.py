@@ -1,5 +1,6 @@
 from datetime import date
 from fastapi.encoders import jsonable_encoder
+from domain.account.crud import verify_password
 from models import Account, Comment, Review
 
 
@@ -89,6 +90,49 @@ def test_delete_account_cascade(
     assert comment is None
 
 
+def test_match_account(client, session, create_account):
+    response = client.post(
+        "/api/account/match", json={"username": "test", "email": "test@example.com"}
+    )
+    print(dir(response))
+
+    assert response.status_code == 200
+    assert response.json()["id"] == 1
+
+    response = client.post(
+        "api/account/match", json={"username": "test", "email": "test1@example.com"}
+    )
+
+    assert response.status_code == 404
+
+
+def test_reset_password(login_header, client, session):
+    response = client.post(
+        "/api/account/reset",
+        params={"account_id": 1},
+        json={"password1": "newPw", "password2": "newPw"},
+        headers=login_header,
+    )
+
+    account = session.get(Account, 1)
+
+    assert response.status_code == 204
+    assert verify_password("newPw", account.password)
+
+
+def test_change_password(login_header, client, session):
+    response = client.post(
+        "api/account/change",
+        json={"password": "test", "password1": "newPw", "password2": "newPw"},
+        headers=login_header,
+    )
+
+    account = session.get(Account, 1)
+
+    assert response.status_code == 204
+    assert verify_password("newPw", account.password)
+
+
 def test_follow(login_header_first, session, client):
     response = client.post(
         "/api/account/follow", json={"account_id": 2}, headers=login_header_first
@@ -117,7 +161,7 @@ def test_find_review_by_account(client, session, review_comment_like_follow):
     response = client.get("/api/account/reviews", params={"account_id": 1})
 
     assert response.status_code == 200
-    assert response.json().get('total') == 1
+    assert response.json().get("total") == 1
     assert len(session.query(Review).all()) == 2
 
 
@@ -125,5 +169,5 @@ def test_find_comment_by_account(client, session, review_comment_like_follow):
     response = client.get("/api/account/comments", params={"account_id": 1})
 
     assert response.status_code == 200
-    assert response.json().get('total') == 1
+    assert response.json().get("total") == 1
     assert len(session.query(Comment).all()) == 2

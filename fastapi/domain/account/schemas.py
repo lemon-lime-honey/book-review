@@ -44,7 +44,7 @@ class Account(AccountBase):
 class AccountUpdate(BaseModel):
     id: int
     username: str
-    email: str
+    email: EmailStr
     birthday: date
     summary: str
 
@@ -54,6 +54,20 @@ class Token(BaseModel):
     token_type: str
     user_id: int
     username: str
+
+
+class AccountMatch(BaseModel):
+    username: str
+    email: EmailStr
+
+
+class PasswordReset(BaseModel):
+    password1: str
+    password2: str
+
+
+class PasswordChange(PasswordReset):
+    password: str
 
 
 class Follow(BaseModel):
