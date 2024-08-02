@@ -93,20 +93,14 @@
     <div class="card-header bg-transparent p-0">
       <div class="px-4 pt-4 d-flex justify-content-between align-items-center">
         <p class="h3">{account.username}</p>
-        {#if is_following}
-          <button
-            on:click="{() => follow()}"
-            class="btn btn-warning"
-            disabled="{$user_id == 0 || $user_id === account.id ? true : false}"
-          >
+        {#if $user_id == account.id}
+          <a use:link href="/account-update" class="btn btn-warning">회원정보 수정</a>
+        {:else if is_following}
+          <button on:click="{() => follow()}" class="btn btn-warning" disabled="{$user_id == 0 ? true : false}">
             언팔로우
           </button>
         {:else}
-          <button
-            on:click="{() => follow()}"
-            class="btn btn-success"
-            disabled="{$user_id == 0 || $user_id === account.id ? true : false}"
-          >
+          <button on:click="{() => follow()}" class="btn btn-success" disabled="{$user_id == 0 ? true : false}">
             팔로우
           </button>
         {/if}

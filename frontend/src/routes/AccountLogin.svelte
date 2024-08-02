@@ -1,5 +1,5 @@
 <script>
-  import { push } from 'svelte-spa-router';
+  import { link, push } from 'svelte-spa-router';
   import Error from '../components/Error.svelte';
   import fastapi from '../lib/api';
   import { access_token, user_id, username, is_login } from '../lib/store';
@@ -56,7 +56,10 @@
           />
           <label for="password">비밀번호</label>
         </div>
-        <button type="submit" class="btn btn-outline-success" on:click="{login}">로그인</button>
+        <div class="d-flex justify-content-between">
+          <button type="submit" class="btn btn-outline-success" on:click="{login}">로그인</button>
+          <a use:link href="/account-match" class="btn btn-outline-warning">비밀번호 재설정</a>
+        </div>
       </form>
     </div>
   </div>

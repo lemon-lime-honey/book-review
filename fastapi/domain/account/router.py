@@ -133,9 +133,9 @@ def account_match(
 
 @router.post("/reset", status_code=status.HTTP_204_NO_CONTENT)
 def reset_password(
-    account_id: int, _reset_password: schemas.PasswordReset, db: so.Session = Depends(get_db)
+    _reset_password: schemas.PasswordReset, db: so.Session = Depends(get_db)
 ):
-    crud.change_password(db, account_id, _reset_password.password1)
+    crud.change_password(db, _reset_password.account_id, _reset_password.password1)
 
 
 @router.post("/change", status_code=status.HTTP_204_NO_CONTENT)

@@ -62,6 +62,7 @@ class AccountMatch(BaseModel):
 
 
 class PasswordReset(BaseModel):
+    account_id: int
     password1: str
     password2: str
 

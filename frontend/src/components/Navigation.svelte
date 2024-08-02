@@ -6,6 +6,7 @@
     event.preventDefault();
     $access_token = '';
     $user_id = 0;
+    $username = '';
     $is_login = false;
   }
 </script>
