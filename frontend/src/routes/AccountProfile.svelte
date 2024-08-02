@@ -1,4 +1,6 @@
 <script>
+  import { marked } from 'marked';
+  import { markedEmoji } from 'marked-emoji';
   import { link } from 'svelte-spa-router';
   import relativeTime from 'dayjs/plugin/relativeTime';
   import fastapi from '../lib/api';
@@ -6,6 +8,7 @@
   import dayjs from 'dayjs';
   import 'dayjs/locale/ko';
   import Icon from '@iconify/svelte';
+  import { options } from '../lib/emoji';
 
   export let params = {};
 
@@ -13,7 +16,7 @@
   dayjs.locale('ko');
 
   let username = params.username;
-  let account = { following: [], followers: [] };
+  let account = { summary: '', following: [], followers: [] };
   let reviews = [];
   let comments = [];
   let review_size = 5;
@@ -26,6 +29,8 @@
 
   $: total_review_page = Math.ceil(review_total / review_size);
   $: total_comment_page = Math.ceil(comment_total / comment_size);
+
+  marked.use(markedEmoji(options));
 
   function get_profile() {
     fastapi('get', '/api/account/get/' + username, {}, (json) => {
@@ -111,7 +116,9 @@
         <span>팔로우 {account.followers.length}</span>
         <span>팔로잉 {account.following.length}</span>
       </div>
-      <p class="px-4 pb-3">{account.summary}</p>
+      <div class="px-3 pt-2 pb-0 border border-secondary-subtle rounded">
+        {@html marked(account.summary)}
+      </div>
     </div>
     <div class="card-body p-0">
       <ul class="nav nav-tabs pt-3" id="profile-tab" role="tablist">
@@ -158,7 +165,7 @@
                     class="text-reset link-underline link-underline-opacity-0"
                   >
                     <div class="card-title">{review.subject}</div>
-                    <div class="card-text text-truncate">{review.content}</div>
+                    <div class="card-text text-truncate">{@html marked(account.summary)}</div>
                     <div class="d-flex justify-content-between">
                       <div class="card-subtitle">{review.book}</div>
                       <div class="card-subtitle">
@@ -202,7 +209,7 @@
                     href="/review-detail/{comment.review_id}"
                     class="text-reset link-underline link-underline-opacity-0"
                   >
-                    <div class="card-text text-truncate">{comment.content}</div>
+                    <div class="card-text text-truncate">{@html marked(account.summary)}</div>
                     <div class="card-subtitle text-end">
                       {comment.updated_at
                         ? dayjs(comment.updated_at).format('YY.MM.DD')

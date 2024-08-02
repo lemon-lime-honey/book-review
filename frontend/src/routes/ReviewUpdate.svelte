@@ -1,7 +1,11 @@
 <script>
+  import DOMPurify from 'dompurify';
+  import { marked } from 'marked';
+  import { markedEmoji } from 'marked-emoji';
   import { push } from 'svelte-spa-router';
   import Error from '../components/Error.svelte';
   import fastapi from '../lib/api';
+  import { options } from '../lib/emoji';
 
   export let params = {};
   const review_id = params.review_id;
@@ -10,6 +14,8 @@
   let book = '';
   let content = '';
   let error = { detail: [] };
+
+  marked.use(markedEmoji(options));
 
   fastapi('get', '/api/review/detail/' + review_id, {}, (json) => {
     subject = json.subject;
@@ -22,9 +28,9 @@
     let url = '/api/review/update/' + review_id;
     let params = {
       review_id: review_id,
-      subject: subject,
-      book: book,
-      content: content,
+      subject: DOMPurify.sanitize(subject),
+      book: DOMPurify.sanitize(book),
+      content: DOMPurify.sanitize(content),
     };
 
     fastapi(
@@ -55,10 +61,10 @@
           <input type="text" class="form-control" id="book" placeholder="book" bind:value="{book}" />
           <label for="book">책 제목</label>
         </div>
-        <div class="form-floating mb-2">
-          <textarea class="form-control" placeholder="content" id="content" style="height: 200px" bind:value="{content}"
+        <div class="d-flex mb-2" style="height: 200px;">
+          <textarea class="form-control w-50 h-100 me-2" aria-label="내용" bind:value="{content}" placeholder="내용"
           ></textarea>
-          <label for="content">내용</label>
+          <div class="border border-secondary-subtle w-50 p-1 preview">{@html marked(content)}</div>
         </div>
         <button class="btn btn-outline-success" on:click="{update_review}">등록</button>
       </form>

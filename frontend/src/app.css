@@ -15,3 +15,12 @@
 #comment-tab.active, #review-tab.active {
   background-color: white;
 }
+
+.marked-emoji-img {
+  height: 1rem;
+}
+
+.preview {
+  overflow-wrap: break-word;
+  overflow:hidden;
+}

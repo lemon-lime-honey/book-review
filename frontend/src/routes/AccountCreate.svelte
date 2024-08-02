@@ -1,7 +1,11 @@
 <script>
+  import DOMPurify from 'dompurify';
+  import { marked } from 'marked';
+  import { markedEmoji } from 'marked-emoji';
   import { push } from 'svelte-spa-router';
   import Error from '../components/Error.svelte';
   import fastapi from '../lib/api';
+  import { options } from '../lib/emoji';
 
   let username = '';
   let password1 = '';
@@ -11,17 +15,19 @@
   let summary = '';
   let error = { detail: [] };
 
+  marked.use(markedEmoji(options));
+
   function post_account(event) {
     event.preventDefault();
 
     let url = '/api/account/create';
     let params = {
-      username: username,
-      password1: password1,
-      password2: password2,
-      email: email,
-      birthday: birthday,
-      summary: summary,
+      username: DOMPurify.sanitize(username),
+      password1: DOMPurify.sanitize(password1),
+      password2: DOMPurify.sanitize(password2),
+      email: DOMPurify.sanitize(email),
+      birthday: DOMPurify.sanitize(birthday),
+      summary: DOMPurify.sanitize(summary),
     };
 
     fastapi(
@@ -79,9 +85,14 @@
           <span class="input-group-text">생년월일</span>
           <input type="date" class="form-control" bind:value="{birthday}" />
         </div>
-        <div class="input-group mb-2">
-          <span class="input-group-text">자기소개</span>
-          <textarea class="form-control" aria-label="자기소개" bind:value="{summary}"></textarea>
+        <div class="d-flex mb-2" style="height: 200px;">
+          <textarea
+            class="form-control w-50 h-100 me-2"
+            aria-label="자기소개"
+            bind:value="{summary}"
+            placeholder="자기소개"
+          ></textarea>
+          <div class="border border-secondary-subtle w-50 p-1 preview">{@html marked(summary)}</div>
         </div>
         <button class="btn btn-outline-success" on:click="{post_account}">가입</button>
       </form>

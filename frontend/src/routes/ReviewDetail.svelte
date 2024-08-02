@@ -1,4 +1,7 @@
 <script>
+  import DOMPurify from 'dompurify';
+  import { marked } from 'marked';
+  import { markedEmoji } from 'marked-emoji';
   import { link, push } from 'svelte-spa-router';
   import fastapi from '../lib/api';
   import { is_login, user_id } from '../lib/store';
@@ -6,14 +9,17 @@
   import 'dayjs/locale/ko';
   import relativeTime from 'dayjs/plugin/relativeTime';
   import Icon from '@iconify/svelte';
+  import { options } from '../lib/emoji';
 
   dayjs.extend(relativeTime);
   dayjs.locale('ko');
 
+  marked.use(markedEmoji(options));
+
   export let params = {};
 
   let review_id = params.review_id;
-  let review = { author: {}, like_accounts: [], dislike_accounts: [] };
+  let review = { content: '', author: {}, like_accounts: [], dislike_accounts: [] };
   let comment_list = [];
   let comment_flag = [];
   let review_flag = 0;
@@ -65,7 +71,7 @@
     event.preventDefault();
 
     let url = '/api/comment/create/' + review_id;
-    let params = { content: content };
+    let params = { content: DOMPurify.sanitize(content) };
 
     fastapi('post', url, params, (json) => {
       content = '';
@@ -195,7 +201,9 @@
       </p>
     </div>
     <div class="card-body p-4">
-      <p class="card-text">{review.content}</p>
+      <div class="card-text">
+        {@html marked(review.content)}
+      </div>
     </div>
     <hr />
     <div class="text-center mb-3 align-items-center">
@@ -248,7 +256,9 @@
             {#each comment_list as comment, i}
               <tr>
                 <td class="text-break w-75">
-                  {comment.content}
+                  <div class="preview">
+                    {@html marked(comment.content)}
+                  </div>
                 </td>
                 <td class="align-middle flex position-relative">
                   <div class="flex my-3">
