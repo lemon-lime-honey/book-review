@@ -47,7 +47,7 @@ def load_current_account(
         return account
 
 
-@router.post("/create", status_code=status.HTTP_204_NO_CONTENT)
+@router.post("/create", status_code=status.HTTP_204_NO_CONTENT, tags=["account"])
 def account_create(
     _account_create: schemas.AccountCreate, db: so.Session = Depends(get_db)
 ):
@@ -59,12 +59,12 @@ def account_create(
     crud.create_account(db, _account_create)
 
 
-@router.get("/get/{username}", response_model=schemas.Account)
+@router.get("/get/{username}", response_model=schemas.Account, tags=["account"])
 def account_get(username: str, db: so.Session = Depends(get_db)):
     return crud.find_account(db, username)
 
 
-@router.post("/login", response_model=schemas.Token)
+@router.post("/login", response_model=schemas.Token, tags=["account"])
 def login(
     form_data: OAuth2PasswordRequestForm = Depends(), db: so.Session = Depends(get_db)
 ):
@@ -90,7 +90,7 @@ def login(
     }
 
 
-@router.put("/update", status_code=status.HTTP_204_NO_CONTENT)
+@router.put("/update", status_code=status.HTTP_204_NO_CONTENT, tags=["account"])
 def account_update(
     _account_update: schemas.AccountUpdate,
     db: so.Session = Depends(get_db),
@@ -110,7 +110,7 @@ def account_update(
     crud.update_account(db, _account_update, account)
 
 
-@router.delete("/delete", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/delete", status_code=status.HTTP_204_NO_CONTENT, tags=["account"])
 def account_delete(
     db: so.Session = Depends(get_db),
     current_user: Account = Depends(load_current_account),
@@ -118,7 +118,7 @@ def account_delete(
     crud.delete_account(db, current_user)
 
 
-@router.post("/match", response_model=schemas.AccountBase)
+@router.post("/match", response_model=schemas.AccountBase, tags=["account"])
 def account_match(
     _account_match: schemas.AccountMatch, db: so.Session = Depends(get_db)
 ):
@@ -131,14 +131,14 @@ def account_match(
     return {"id": account.id}
 
 
-@router.post("/reset", status_code=status.HTTP_204_NO_CONTENT)
+@router.post("/reset", status_code=status.HTTP_204_NO_CONTENT, tags=["account"])
 def reset_password(
     _reset_password: schemas.PasswordReset, db: so.Session = Depends(get_db)
 ):
     crud.change_password(db, _reset_password.account_id, _reset_password.password1)
 
 
-@router.post("/change", status_code=status.HTTP_204_NO_CONTENT)
+@router.post("/change", status_code=status.HTTP_204_NO_CONTENT, tags=["account"])
 def change_password(
     _change_password: schemas.PasswordChange,
     db: so.Session = Depends(get_db),
@@ -154,7 +154,7 @@ def change_password(
     db.commit()
 
 
-@router.post("/follow", status_code=status.HTTP_204_NO_CONTENT)
+@router.post("/follow", status_code=status.HTTP_204_NO_CONTENT, tags=["account"])
 def follow(
     _follow: schemas.Follow,
     db: so.Session = Depends(get_db),
@@ -169,7 +169,7 @@ def follow(
     crud.follow(db, account, current_user)
 
 
-@router.get("/reviews", response_model=ReviewList)
+@router.get("/reviews", response_model=ReviewList, tags=["account"])
 def review_list_by_account(
     account_id: int, db: so.Session = Depends(get_db), page: int = 0, size: int = 5
 ):
@@ -183,7 +183,7 @@ def review_list_by_account(
     return {"total": total, "review_list": _review_list}
 
 
-@router.get("/comments", response_model=CommentList)
+@router.get("/comments", response_model=CommentList, tags=["account"])
 def comment_list_by_account(
     account_id: int, db: so.Session = Depends(get_db), page: int = 0, size: int = 5
 ):

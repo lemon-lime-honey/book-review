@@ -11,13 +11,13 @@ from models import Account
 router = APIRouter(prefix="/api/review")
 
 
-@router.get("/list", response_model=schemas.ReviewList)
+@router.get("/list", response_model=schemas.ReviewList, tags=["review"])
 def review_list(db: so.Session = Depends(get_db), page: int = 0, size: int = 12):
     total, _review_list = crud.get_review_list(db, skip=page * size, limit=size)
     return {"total": total, "review_list": _review_list}
 
 
-@router.get("/detail/{review_id}", response_model=schemas.Review)
+@router.get("/detail/{review_id}", response_model=schemas.Review, tags=["review"])
 def review_detail(review_id: int, db: so.Session = Depends(get_db)):
     review = crud.get_review(db, review_id)
     if review is None:
@@ -28,7 +28,7 @@ def review_detail(review_id: int, db: so.Session = Depends(get_db)):
     return review
 
 
-@router.post("/create", status_code=status.HTTP_204_NO_CONTENT)
+@router.post("/create", status_code=status.HTTP_204_NO_CONTENT, tags=["review"])
 def review_create(
     _review_create: schemas.ReviewCreate,
     db: so.Session = Depends(get_db),
@@ -37,7 +37,7 @@ def review_create(
     crud.create_review(db, _review_create, current_user)
 
 
-@router.put("/update/{review_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.put("/update/{review_id}", status_code=status.HTTP_204_NO_CONTENT, tags=["review"])
 def review_update(
     _review_update: schemas.ReviewUpdate,
     db: so.Session = Depends(get_db),
@@ -57,7 +57,7 @@ def review_update(
     crud.update_review(db, _review_update, review)
 
 
-@router.delete("/delete", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/delete", status_code=status.HTTP_204_NO_CONTENT, tags=["review"])
 def review_delete(
     _review_delete: schemas.ReviewDelete,
     db: so.Session = Depends(get_db),
@@ -77,7 +77,7 @@ def review_delete(
     crud.delete_review(db, review)
 
 
-@router.post("/like", status_code=status.HTTP_204_NO_CONTENT)
+@router.post("/like", status_code=status.HTTP_204_NO_CONTENT, tags=["review"])
 def review_like(
     _review_like: schemas.ReviewLikeDislike,
     db: so.Session = Depends(get_db),
@@ -97,7 +97,7 @@ def review_like(
     crud.like_review(db, review, current_user)
 
 
-@router.post("/dislike", status_code=status.HTTP_204_NO_CONTENT)
+@router.post("/dislike", status_code=status.HTTP_204_NO_CONTENT, tags=["review"])
 def review_dislike(
     _review_dislike: schemas.ReviewLikeDislike,
     db: so.Session = Depends(get_db),

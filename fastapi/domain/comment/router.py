@@ -12,7 +12,7 @@ from models import Account
 router = APIRouter(prefix="/api/comment")
 
 
-@router.post("/create/{review_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.post("/create/{review_id}", status_code=status.HTTP_204_NO_CONTENT, tags=["comment"])
 def comment_create(
     review_id: int,
     _comment_create: schemas.CommentCreate,
@@ -28,7 +28,7 @@ def comment_create(
     c_crud.create_comment(db, _comment_create, review, current_user)
 
 
-@router.put("/update", status_code=status.HTTP_204_NO_CONTENT)
+@router.put("/update", status_code=status.HTTP_204_NO_CONTENT, tags=["comment"])
 def comment_update(
     _comment_create: schemas.CommentUpdate,
     db: so.Session = Depends(get_db),
@@ -42,7 +42,7 @@ def comment_update(
     c_crud.update_comment(db, _comment_create, comment)
 
 
-@router.get("/list/{review_id}", response_model=schemas.CommentList)
+@router.get("/list/{review_id}", response_model=schemas.CommentList, tags=["comment"])
 def comment_list(
     review_id: int, db: so.Session = Depends(get_db), page: int = 0, size: int = 10
 ):
@@ -52,12 +52,12 @@ def comment_list(
     return {"total": total, "comment_list": _comment_list}
 
 
-@router.get("/detail/{comment_id}", response_model=schemas.Comment)
+@router.get("/detail/{comment_id}", response_model=schemas.Comment, tags=["comment"])
 def comment_detail(comment_id: int, db: so.Session = Depends(get_db)):
     return c_crud.get_comment(db, comment_id)
 
 
-@router.delete("/delete", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/delete", status_code=status.HTTP_204_NO_CONTENT, tags=["comment"])
 def comment_delete(
     _comment_delete: schemas.CommentDelete,
     db: so.Session = Depends(get_db),
@@ -77,7 +77,7 @@ def comment_delete(
     c_crud.delete_comment(db, comment)
 
 
-@router.post("/like", status_code=status.HTTP_204_NO_CONTENT)
+@router.post("/like", status_code=status.HTTP_204_NO_CONTENT, tags=["comment"])
 def comment_like(
     _comment_like: schemas.CommentLikeDislike,
     db: so.Session = Depends(get_db),
@@ -97,7 +97,7 @@ def comment_like(
     c_crud.like_comment(db, comment, current_user)
 
 
-@router.post("/dislike", status_code=status.HTTP_204_NO_CONTENT)
+@router.post("/dislike", status_code=status.HTTP_204_NO_CONTENT, tags=["comment"])
 def comment_dislike(
     _comment_dislike: schemas.CommentLikeDislike,
     db: so.Session = Depends(get_db),

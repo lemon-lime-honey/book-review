@@ -6,7 +6,7 @@ from domain.account import router as account_router
 from domain.comment import router as comment_router
 from domain.review import router as review_router
 
-app = FastAPI()
+app = FastAPI(swagger_ui_parameters={"docExpansion": True, "operationSorter": "method"})
 
 origins = ["http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:8000"]
 
@@ -24,6 +24,6 @@ app.include_router(comment_router.router)
 app.mount("/assets", StaticFiles(directory="../frontend/dist/assets"))
 
 
-@app.get("/")
+@app.get("/", tags=["root"])
 def index():
     return FileResponse("../frontend/dist/index.html")
