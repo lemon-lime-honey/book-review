@@ -1,7 +1,5 @@
 # TODO
 
-- [ ] README 작성
-
 # DONE
 
 <details>
@@ -117,4 +115,12 @@
 - [X] 비밀번호 재설정
 - [X] 마크다운 지원
 - [X] 링크 확인
+</details>
+
+<details>
+<summary>240805</summary>
+
+- [X] README 작성
+- [X] 프론트엔드 빌드 관련 설정
+- [X] Swagger 관련 설정
 </details>
